@@ -1,0 +1,110 @@
+---
+import { Menu } from '@lucide/astro';
+import GitHubIcon from '@/components/GitHubIcon.astro';
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import { NAV, SITE } from '@/config';
+import { withBase } from '@/lib/url';
+
+const BASE_PREFIX = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const CURRENT = Astro.url.pathname.replace(/\/+$/, '') || '/';
+
+/**
+ * True when the current page is the nav target or lives inside its section
+ * (so `/blog/some-post/` still highlights "Blog").
+ *
+ * Both the base-prefixed and the bare path are compared because the value of
+ * `Astro.url.pathname` depends on how the page was requested.
+ */
+function isActive(href: string): boolean {
+  const suffix = href === '/' ? '' : href.replace(/\/+$/, '');
+  const candidates = [...new Set([`${BASE_PREFIX}${suffix}` || '/', suffix || '/'])];
+
+  return candidates.some(
+    (target) => CURRENT === target || (suffix !== '' && CURRENT.startsWith(`${target}/`)),
+  );
+}
+
+const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-canvas">
+  <div class="container-page flex h-16 items-center justify-between gap-6">
+    <a
+      href={withBase('/')}
+      class="rounded-md text-[0.95rem] font-semibold tracking-tight text-ink"
+      aria-label={`${SITE.title} — home`}
+    >
+      {SITE.title}
+    </a>
+
+    <div class="flex items-center gap-1">
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Main">
+        {NAV.map((item) => (
+          <a
+            href={withBase(item.href)}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            class:list={[
+              linkBase,
+              isActive(item.href) ? 'font-medium text-ink' : 'text-muted hover:text-ink',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href={SITE.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class:list={[linkBase, 'inline-flex items-center gap-2 text-muted hover:text-ink']}
+        >
+          <GitHubIcon class="h-4 w-4" />
+          <span>GitHub</span>
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </nav>
+
+      <ThemeToggle />
+
+      <details class="relative md:hidden">
+        <summary class="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-ink [&::-webkit-details-marker]:hidden">
+          <Menu class="h-5 w-5" aria-hidden="true" />
+          <span class="sr-only">Open main menu</span>
+        </summary>
+
+        <nav
+          class="absolute top-full right-0 z-50 mt-2 w-52 rounded-lg border border-line bg-canvas p-2 shadow-sm"
+          aria-label="Mobile"
+        >
+          <ul class="flex flex-col">
+            {NAV.map((item) => (
+              <li>
+                <a
+                  href={withBase(item.href)}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  class:list={[
+                    'block rounded-md px-3 py-2.5 text-sm transition-colors',
+                    isActive(item.href) ? 'font-medium text-ink' : 'text-muted hover:text-ink',
+                  ]}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href={SITE.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm text-muted transition-colors hover:text-ink"
+              >
+                <GitHubIcon class="h-4 w-4" />
+                <span>GitHub</span>
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

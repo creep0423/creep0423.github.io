@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  # Keep the toolchain current and let CI surface breaking changes early.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'chore(deps)'
+
+  # Keep the deployment workflow on supported runner versions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'ci(deps)'

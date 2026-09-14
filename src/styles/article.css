@@ -1,0 +1,242 @@
+/* ---------------------------------------------------------------------------
+   Article typography
+   Scoped to `.article-body`, which wraps the rendered Markdown of a post.
+   Written by hand (rather than a prose plugin) so that CJK line height,
+   punctuation and code block behaviour can be tuned precisely.
+   --------------------------------------------------------------------------- */
+
+.article-body {
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.85;
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+
+/* Vertical rhythm: spacing comes from the gap between siblings, so a post
+   never has to fight collapsing margins. */
+.article-body > * + * {
+  margin-top: 1.4em;
+}
+
+.article-body > :first-child {
+  margin-top: 0;
+}
+
+/* --- Headings ------------------------------------------------------------- */
+
+.article-body :is(h2, h3, h4, h5, h6) {
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  /* Keeps headings clear of the sticky header when jumped to from the TOC. */
+  scroll-margin-top: 6rem;
+}
+
+.article-body h2 {
+  margin-top: 2.75em;
+  margin-bottom: 0.9em;
+  padding-top: 1.6em;
+  font-size: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.article-body h3 {
+  margin-top: 2.1em;
+  margin-bottom: 0.7em;
+  font-size: 1.2rem;
+}
+
+.article-body h4 {
+  margin-top: 1.75em;
+  margin-bottom: 0.6em;
+  font-size: 1.05rem;
+}
+
+.article-body :is(h2, h3, h4):target {
+  border-radius: 0.25rem;
+  background-color: color-mix(in oklab, var(--accent) 12%, transparent);
+  box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--accent) 12%, transparent);
+}
+
+/* --- Text ----------------------------------------------------------------- */
+
+.article-body a {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: from-font;
+  text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 150ms ease;
+}
+
+.article-body a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.article-body strong {
+  font-weight: 650;
+}
+
+.article-body :is(ul, ol) {
+  padding-left: 1.4em;
+}
+
+.article-body ul {
+  list-style: disc;
+}
+
+.article-body ol {
+  list-style: decimal;
+}
+
+.article-body li::marker {
+  color: var(--muted);
+}
+
+.article-body li + li {
+  margin-top: 0.4em;
+}
+
+.article-body li > :is(ul, ol) {
+  margin-top: 0.4em;
+}
+
+.article-body hr {
+  margin-block: 3em;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+/* --- Blockquote ----------------------------------------------------------- */
+
+.article-body blockquote {
+  padding: 0.15em 0 0.15em 1.15em;
+  border-left: 3px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  color: var(--muted);
+  font-style: normal;
+}
+
+.article-body blockquote p + p {
+  margin-top: 0.75em;
+}
+
+.article-body blockquote cite {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  font-style: normal;
+}
+
+/* --- Code ----------------------------------------------------------------- */
+
+.article-body :not(pre) > code {
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  background-color: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  white-space: break-spaces;
+}
+
+.article-body pre {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  /* Code blocks scroll horizontally instead of stretching the page. */
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.article-body pre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* Dual light/dark Shiki themes: the light theme is rendered inline, the dark
+   palette is exposed as `--shiki-dark*` custom properties. */
+.dark .article-body :is(.astro-code, .shiki),
+.dark .article-body :is(.astro-code, .shiki) span {
+  color: var(--shiki-dark, inherit) !important;
+  background-color: var(--shiki-dark-bg, transparent) !important;
+  font-style: var(--shiki-dark-font-style, inherit) !important;
+  font-weight: var(--shiki-dark-font-weight, inherit) !important;
+  text-decoration: var(--shiki-dark-text-decoration, inherit) !important;
+}
+
+/* --- Tables --------------------------------------------------------------- */
+
+.article-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.article-body :is(th, td) {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-body th {
+  background-color: var(--surface);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --- Media ---------------------------------------------------------------- */
+
+.article-body :is(img, video, svg) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.article-body figure {
+  margin-inline: 0;
+}
+
+.article-body figcaption {
+  margin-top: 0.6em;
+  color: var(--muted);
+  font-size: 0.875em;
+  text-align: center;
+}
+
+/* --- Footnotes (GFM) ------------------------------------------------------ */
+
+.article-body .footnotes {
+  margin-top: 3.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* --- Math (KaTeX) --------------------------------------------------------- */
+
+.article-body .katex {
+  font-size: 1.05em;
+}
+
+/* Display math is wider than the column on narrow screens; let it scroll
+   inside its own box rather than overflowing the page. */
+.article-body .katex-display {
+  padding-block: 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.article-body .katex-display > .katex {
+  white-space: normal;
+}

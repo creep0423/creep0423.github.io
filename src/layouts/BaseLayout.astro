@@ -1,0 +1,105 @@
+---
+import '@/styles/global.css';
+
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import SEO from '@/components/SEO.astro';
+import { SITE } from '@/config';
+import { withBase } from '@/lib/url';
+
+interface Props {
+  /** Page title; the site title is appended for you. */
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  image,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  tags,
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="sitemap" type="application/xml" href={withBase('/sitemap-index.xml')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.title} — RSS feed`}
+      href={withBase('/rss.xml')}
+    />
+
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      tags={tags}
+      noindex={noindex}
+    />
+
+    {/*
+      Resolves the colour theme before the first paint.
+      Must stay inline and unprocessed: any deferred script would flash the
+      wrong theme. `localStorage` is wrapped in try/catch because it throws in
+      some privacy modes, and this runs during parser execution, not SSR.
+    */}
+    <script is:inline>
+      (function () {
+        function readStoredTheme() {
+          try {
+            return localStorage.getItem('theme');
+          } catch {
+            // Unavailable in some privacy modes; fall back to the system setting.
+            return null;
+          }
+        }
+
+        const stored = readStoredTheme();
+        const isDark = stored
+          ? stored === 'dark'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const root = document.documentElement;
+        root.classList.toggle('dark', isDark);
+        root.dataset.theme = isDark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:border focus:border-line focus:bg-canvas focus:px-4 focus:py-2 focus:text-sm focus:text-ink"
+    >
+      Skip to content
+    </a>
+
+    <Header />
+
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

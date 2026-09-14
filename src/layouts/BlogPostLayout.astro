@@ -1,0 +1,164 @@
+---
+import 'katex/dist/katex.min.css';
+import '@/styles/article.css';
+
+import { ArrowLeft, ArrowRight, CalendarDays, Clock, RefreshCw } from '@lucide/astro';
+import type { MarkdownHeading } from 'astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import Tag from '@/components/Tag.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { BlogPost } from '@/lib/posts';
+import { withBase } from '@/lib/url';
+import { formatDate, getReadingTimeMinutes, toISODate } from '@/lib/utils';
+
+interface Props {
+  post: BlogPost;
+  /** Heading tree extracted from the rendered Markdown. */
+  headings: MarkdownHeading[];
+  /** The next newer post, when one exists. */
+  newer?: BlogPost;
+  /** The next older post, when one exists. */
+  older?: BlogPost;
+}
+
+const { post, headings, newer, older } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, category } = post.data;
+
+const readingTime = getReadingTimeMinutes(post.body);
+const backHref = withBase('/blog/');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={toISODate(pubDate)}
+  modifiedTime={updatedDate ? toISODate(updatedDate) : undefined}
+  tags={tags}
+>
+  <div class="container-page pt-10 sm:pt-14">
+    <article class="mx-auto max-w-[46rem]">
+      <a
+        href={backHref}
+        class="inline-flex items-center gap-1.5 rounded-md text-sm text-muted transition-colors hover:text-ink"
+      >
+        <ArrowLeft class="h-4 w-4" aria-hidden="true" />
+        <span>All articles</span>
+      </a>
+
+      <header class="mt-7">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted">
+          <span class="inline-flex items-center gap-1.5">
+            <CalendarDays class="h-3.5 w-3.5" aria-hidden="true" />
+            <time datetime={toISODate(pubDate)}>{formatDate(pubDate)}</time>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <Clock class="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{readingTime} min read</span>
+          </span>
+          <span>{category}</span>
+          {updatedDate && (
+            <span class="inline-flex items-center gap-1.5">
+              <RefreshCw class="h-3.5 w-3.5" aria-hidden="true" />
+              <span>
+                Updated <time datetime={toISODate(updatedDate)}>{formatDate(updatedDate)}</time>
+              </span>
+            </span>
+          )}
+        </div>
+
+        <h1 class="mt-4 text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
+          {title}
+        </h1>
+
+        <p class="mt-4 text-base leading-relaxed text-muted">{description}</p>
+
+        {tags.length > 0 && (
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <li>
+                <Tag tag={tag} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </header>
+
+      {/* Collapsible table of contents on small screens; the sidebar version is
+          rendered below and shown from `lg` upwards. */}
+      <details class="mt-8 rounded-lg border border-line px-4 py-3 lg:hidden">
+        <summary class="cursor-pointer text-sm font-medium text-ink">On this page</summary>
+        <div class="mt-3">
+          <TableOfContents headings={headings} />
+        </div>
+      </details>
+    </article>
+
+    <div class="mx-auto mt-10 grid max-w-[46rem] gap-12 lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_15rem]">
+      <div class="min-w-0">
+        <div class="article-body mx-auto max-w-[46rem]" data-article-body>
+          <slot />
+        </div>
+
+        <nav
+          class="mx-auto mt-16 max-w-[46rem] border-t border-line pt-8"
+          aria-label="Post navigation"
+        >
+          <ul class="grid gap-4 sm:grid-cols-2">
+            {older && (
+              <li>
+                <a
+                  href={withBase(`/blog/${older.id}/`)}
+                  class="group flex h-full flex-col rounded-lg border border-line p-4 transition-colors hover:border-accent/40"
+                >
+                  <span class="inline-flex items-center gap-1.5 text-xs text-muted">
+                    <ArrowLeft class="h-3.5 w-3.5" aria-hidden="true" />
+                    Older
+                  </span>
+                  <span class="mt-1.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                    {older.data.title}
+                  </span>
+                </a>
+              </li>
+            )}
+            {newer && (
+              <li class="sm:text-right">
+                <a
+                  href={withBase(`/blog/${newer.id}/`)}
+                  class="group flex h-full flex-col rounded-lg border border-line p-4 transition-colors hover:border-accent/40"
+                >
+                  <span class="inline-flex items-center gap-1.5 text-xs text-muted sm:justify-end">
+                    Newer
+                    <ArrowRight class="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                  <span class="mt-1.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                    {newer.data.title}
+                  </span>
+                </a>
+              </li>
+            )}
+          </ul>
+
+          <div class="mt-8">
+            <a
+              href={backHref}
+              class="inline-flex items-center gap-1.5 rounded-md text-sm text-muted transition-colors hover:text-ink"
+            >
+              <ArrowLeft class="h-4 w-4" aria-hidden="true" />
+              <span>Back to all articles</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <aside class="hidden lg:block">
+        <div class="sticky top-24">
+          <p class="text-xs font-semibold tracking-wide text-muted uppercase">On this page</p>
+          <div class="mt-3">
+            <TableOfContents headings={headings} />
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

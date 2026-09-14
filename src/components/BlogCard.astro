@@ -1,0 +1,66 @@
+---
+import Tag from '@/components/Tag.astro';
+import type { BlogPost } from '@/lib/posts';
+import { withBase } from '@/lib/url';
+import { formatDate, getReadingTimeMinutes, toISODate } from '@/lib/utils';
+
+interface Props {
+  post: BlogPost;
+  /** Heading level for the card title, so pages keep a sane outline. */
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { post, headingLevel = 3 } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, category, draft, featured } = post.data;
+
+const Heading = `h${headingLevel}` as const;
+const href = withBase(`/blog/${post.id}/`);
+const readingTime = getReadingTimeMinutes(post.body);
+// Drafts only exist in dev builds (see `getPublishedPosts`), so this badge
+// never reaches production.
+const isDraftPreview = draft && import.meta.env.DEV;
+---
+
+<article class="group">
+  <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted">
+    <time datetime={toISODate(pubDate)}>{formatDate(pubDate)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{readingTime} min read</span>
+    <span aria-hidden="true">·</span>
+    <span>{category}</span>
+    {updatedDate && (
+      <>
+        <span aria-hidden="true">·</span>
+        <span>
+          Updated <time datetime={toISODate(updatedDate)}>{formatDate(updatedDate)}</time>
+        </span>
+      </>
+    )}
+    {featured && (
+      <span class="rounded-full border border-accent/40 px-2 py-0.5 text-[0.7rem] text-accent">
+        Featured
+      </span>
+    )}
+    {isDraftPreview && (
+      <span class="rounded-full border border-line px-2 py-0.5 text-[0.7rem]">Draft</span>
+    )}
+  </div>
+
+  <Heading class="mt-2.5 text-lg leading-snug font-semibold tracking-tight">
+    <a href={href} class="rounded-sm transition-colors group-hover:text-accent">
+      {title}
+    </a>
+  </Heading>
+
+  <p class="mt-2 text-sm leading-relaxed text-muted">{description}</p>
+
+  {tags.length > 0 && (
+    <ul class="mt-3.5 flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <li>
+          <Tag tag={tag} />
+        </li>
+      ))}
+    </ul>
+  )}
+</article>

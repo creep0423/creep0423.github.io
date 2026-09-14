@@ -1,0 +1,26 @@
+---
+import { render } from 'astro:content';
+import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
+import { getNeighbours, getPublishedPosts } from '@/lib/posts';
+
+/**
+ * Static paths are generated from the published posts, so drafts never appear
+ * in a production build. `Astro.site` + `base` are applied through
+ * `BaseLayout`, which keeps canonical URLs correct on project pages.
+ */
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: { post, ...getNeighbours(posts, index) },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<BlogPostLayout post={post} headings={headings} newer={newer} older={older}>
+  <Content />
+</BlogPostLayout>

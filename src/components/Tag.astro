@@ -1,0 +1,33 @@
+---
+import { withBase } from '@/lib/url';
+
+interface Props {
+  tag: string;
+  /** Set to `false` for a non-interactive chip (e.g. inside a filter list). */
+  link?: boolean;
+  class?: string;
+}
+
+const { tag, link = true, class: className = '' } = Astro.props;
+
+/**
+ * Tags link to the blog index with a `?tag=` query. The index performs the
+ * filtering client-side, and degrades gracefully to "all posts" without JS.
+ */
+const href = `${withBase('/blog/')}?tag=${encodeURIComponent(tag)}`;
+
+const classes = [
+  'inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-1 text-xs leading-none text-muted transition-colors hover:border-accent/50 hover:text-ink',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{link ? (
+  <a href={href} rel="tag" class={classes}>
+    {tag}
+  </a>
+) : (
+  <span class={classes}>{tag}</span>
+)}

@@ -1,0 +1,173 @@
+---
+import { Search } from '@lucide/astro';
+import BlogCard from '@/components/BlogCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts, getTagCounts } from '@/lib/posts';
+
+const posts = await getPublishedPosts();
+const tagCounts = getTagCounts(posts);
+
+/**
+ * The search index is built at build time and attached to each list item as a
+ * data attribute. The client script therefore only has to filter existing DOM
+ * nodes — no index file, no fetch, no backend.
+ */
+const items = posts.map((post) => ({
+  post,
+  search: [post.data.title, post.data.description, post.data.category, ...post.data.tags]
+    .join(' ')
+    .toLowerCase(),
+  tags: post.data.tags,
+}));
+
+const filterButton =
+  'inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-xs text-muted transition-colors hover:text-ink';
+---
+
+<BaseLayout
+  title="Blog"
+  description="Technical articles about large language models, retrieval-augmented generation, AI agents and deep learning."
+>
+  <div class="container-page pt-14 sm:pt-20">
+    <header>
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Blog</h1>
+      <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+        Notes from building with large language models: retrieval pipelines, agents, transformers
+        and the engineering around them. Everything is written while implementing it, so the code is
+        real.
+      </p>
+    </header>
+
+    <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="relative w-full sm:max-w-xs">
+        <Search
+          class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted"
+          aria-hidden="true"
+        />
+        <label for="post-search" class="sr-only">
+          Search articles
+        </label>
+        <input
+          id="post-search"
+          type="search"
+          autocomplete="off"
+          placeholder="Search articles…"
+          class="w-full rounded-md border border-line bg-canvas py-2 pr-3 pl-9 text-sm text-ink transition-colors placeholder:text-muted/70 focus:border-accent"
+        />
+      </div>
+
+      <p id="post-count" class="text-sm text-muted" aria-live="polite">
+        {posts.length} articles
+      </p>
+    </div>
+
+    {tagCounts.length > 0 && (
+      <div class="mt-6 flex flex-wrap gap-2" role="group" aria-label="Filter articles by tag">
+        <button type="button" data-tag-filter="all" aria-pressed="true" class={filterButton}>
+          All
+          <span class="text-muted/70">{posts.length}</span>
+        </button>
+        {tagCounts.map(({ tag, count }) => (
+          <button type="button" data-tag-filter={tag} aria-pressed="false" class={filterButton}>
+            {tag}
+            <span class="text-muted/70">{count}</span>
+          </button>
+        ))}
+      </div>
+    )}
+
+    <ul id="post-list" class="mt-8 divide-y divide-line border-t border-line">
+      {items.map(({ post, search, tags }) => (
+        <li class="py-7" data-post-item data-search={search} data-tags={tags.join('|')}>
+          <BlogCard post={post} headingLevel={2} />
+        </li>
+      ))}
+    </ul>
+
+    <p id="post-empty" class="hidden py-16 text-center text-sm text-muted">
+      No articles match your search.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  [data-tag-filter][aria-pressed='true'] {
+    border-color: color-mix(in oklab, var(--accent) 50%, transparent);
+    background-color: color-mix(in oklab, var(--accent) 10%, transparent);
+    color: var(--ink);
+  }
+</style>
+
+<script>
+  /**
+   * Client-side filtering for the article list.
+   *
+   * Pure DOM work over markup that already exists: no index download, no
+   * framework, and the page stays fully readable if JavaScript is unavailable.
+   */
+  const input = document.getElementById('post-search') as HTMLInputElement | null;
+  const list = document.getElementById('post-list');
+  const emptyState = document.getElementById('post-empty');
+  const counter = document.getElementById('post-count');
+  const filterButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-tag-filter]'),
+  );
+
+  const items = list ? Array.from(list.querySelectorAll<HTMLElement>('[data-post-item]')) : [];
+
+  if (items.length > 0) {
+    const validTags = new Set(filterButtons.map((button) => button.dataset.tagFilter ?? 'all'));
+    const requestedTag = new URLSearchParams(window.location.search).get('tag') ?? 'all';
+    let activeTag = validTags.has(requestedTag) ? requestedTag : 'all';
+
+    function syncFilterButtons(): void {
+      for (const button of filterButtons) {
+        button.setAttribute('aria-pressed', String(button.dataset.tagFilter === activeTag));
+      }
+    }
+
+    function applyFilters(): void {
+      const query = (input?.value ?? '').trim().toLowerCase();
+      let visible = 0;
+
+      for (const item of items) {
+        const matchesQuery = query === '' || (item.dataset.search ?? '').includes(query);
+        const matchesTag =
+          activeTag === 'all' || (item.dataset.tags ?? '').split('|').includes(activeTag);
+        const show = matchesQuery && matchesTag;
+
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+
+      if (counter) {
+        counter.textContent =
+          visible === items.length
+            ? `${items.length} articles`
+            : `${visible} of ${items.length} articles`;
+      }
+      emptyState?.classList.toggle('hidden', visible > 0);
+    }
+
+    function syncUrl(): void {
+      const url = new URL(window.location.href);
+      if (activeTag === 'all') url.searchParams.delete('tag');
+      else url.searchParams.set('tag', activeTag);
+      window.history.replaceState(null, '', url);
+    }
+
+    for (const button of filterButtons) {
+      button.addEventListener('click', () => {
+        activeTag = button.dataset.tagFilter ?? 'all';
+        syncFilterButtons();
+        syncUrl();
+        applyFilters();
+      });
+    }
+
+    input?.addEventListener('input', applyFilters);
+
+    syncFilterButtons();
+    applyFilters();
+  }
+</script>

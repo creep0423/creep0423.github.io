@@ -1,0 +1,63 @@
+---
+import { Moon, Sun } from '@lucide/astro';
+
+/**
+ * Light/dark toggle.
+ *
+ * The theme itself is applied by the inline script in `BaseLayout.astro`
+ * before the first paint; this component only reflects that state and writes
+ * the user's explicit choice to `localStorage`.
+ */
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-ink"
+  aria-label="Toggle color theme"
+  aria-pressed="false"
+>
+  <Moon class="h-[1.05rem] w-[1.05rem] dark:hidden" aria-hidden="true" />
+  <Sun class="hidden h-[1.05rem] w-[1.05rem] dark:block" aria-hidden="true" />
+</button>
+
+<script>
+  const STORAGE_KEY = 'theme';
+  const root = document.documentElement;
+  const button = document.getElementById('theme-toggle');
+
+  function storedTheme(): string | null {
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch {
+      // Storage is unavailable in some privacy modes; fall back to system.
+      return null;
+    }
+  }
+
+  function applyTheme(dark: boolean): void {
+    root.classList.toggle('dark', dark);
+    root.dataset.theme = dark ? 'dark' : 'light';
+    button?.setAttribute('aria-pressed', String(dark));
+    button?.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+
+  // Sync the button with the class the inline head script already applied.
+  applyTheme(root.classList.contains('dark'));
+
+  button?.addEventListener('click', () => {
+    const next = !root.classList.contains('dark');
+    applyTheme(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next ? 'dark' : 'light');
+    } catch {
+      // Ignore: the theme still applies for this page view.
+    }
+  });
+
+  // Follow the operating system for as long as the user has not chosen.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    if (storedTheme()) return;
+    applyTheme(event.matches);
+  });
+</script>

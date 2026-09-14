@@ -1,0 +1,95 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  /** Accessible name for the navigation landmark. */
+  label?: string;
+}
+
+const { headings, label = 'On this page' } = Astro.props;
+
+// Depth 1 is the post title and depth 4+ is too granular for a sidebar.
+const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{items.length > 0 && (
+  <nav aria-label={label}>
+    <ul class="border-l border-line text-sm">
+      {items.map((heading) => (
+        <li>
+          <a
+            href={`#${heading.slug}`}
+            data-toc-link
+            class:list={[
+              'toc-link -ml-px block border-l-2 border-transparent py-1 leading-snug text-muted transition-colors hover:text-ink',
+              heading.depth === 3 ? 'pl-6' : 'pl-3',
+            ]}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc-link[aria-current='location'] {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+</style>
+
+<script>
+  /**
+   * Highlights the table-of-contents entry for the section currently being
+   * read. Scroll-driven rather than IntersectionObserver-driven so that the
+   * "last heading above the fold" is always the active one.
+   */
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+  const headings = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-article-body] :is(h2, h3)[id]'),
+  );
+
+  if (links.length > 0 && headings.length > 0) {
+    const byId = new Map(
+      links.map((link) => [decodeURIComponent(link.hash.slice(1)), link] as const),
+    );
+    const OFFSET = 96; // px below the sticky header
+    let activeId = '';
+    let scheduled = false;
+
+    function setActive(id: string): void {
+      if (id === activeId) return;
+      activeId = id;
+
+      for (const [headingId, link] of byId) {
+        if (headingId === id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    }
+
+    function update(): void {
+      scheduled = false;
+      let current = '';
+
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top <= OFFSET) current = heading.id;
+        else break;
+      }
+
+      setActive(current);
+    }
+
+    function schedule(): void {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+
+    document.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    update();
+  }
+</script>

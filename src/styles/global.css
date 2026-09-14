@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Dark mode
+   The `.dark` class is applied to <html> by an inline script in
+   `BaseLayout.astro` before the first paint (system preference by default,
+   localStorage once the user has chosen), so there is no theme flash.
+   --------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   `@theme inline` keeps the generated utilities pointing at the custom
+   properties below, which is what allows the same `bg-canvas` / `text-ink`
+   classes to resolve differently in light and dark mode.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
+    sans-serif;
+  --font-mono:
+    ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+}
+
+:root {
+  color-scheme: light;
+  --canvas: #ffffff;
+  --surface: #f7f7f8;
+  --line: #e4e4e7;
+  --ink: #18181b;
+  --muted: #52525b;
+  --accent: #1d4ed8;
+  --accent-contrast: #ffffff;
+}
+
+.dark {
+  color-scheme: dark;
+  --canvas: #0b0b0d;
+  --surface: #16161a;
+  --line: #2a2a31;
+  --ink: #ededf0;
+  --muted: #a1a1aa;
+  --accent: #7aa2f7;
+  --accent-contrast: #0b0b0d;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A single, consistent focus ring for every interactive element. */
+  :where(a, button, input, summary, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+
+  /* Balanced headings, no orphaned words in short copy. */
+  :where(h1, h2, h3) {
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Small reusable utilities
+   --------------------------------------------------------------------------- */
+
+/** Centred page gutter, shared by the header, footer and every page shell. */
+@utility container-page {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2rem);
+}
+
+/** Quiet underlines for text links. */
+@utility link-subtle {
+  text-decoration-line: underline;
+  text-decoration-thickness: from-font;
+  text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 150ms ease;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}

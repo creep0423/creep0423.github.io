@@ -1,0 +1,100 @@
+---
+import { Mail } from '@lucide/astro';
+import GitHubIcon from '@/components/GitHubIcon.astro';
+import Tag from '@/components/Tag.astro';
+import { ABOUT, SITE } from '@/config';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/lib/url';
+
+const description = `About ${SITE.author} — ${SITE.jobTitle.toLowerCase()} working on large language models, retrieval-augmented generation and AI agents.`;
+---
+
+<BaseLayout title="About" description={description}>
+  <div class="container-page pt-14 sm:pt-20">
+    <header>
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">About</h1>
+      <p class="mt-4 text-base text-muted">{SITE.jobTitle}</p>
+    </header>
+
+    <div class="mt-12 grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
+      <div class="max-w-2xl">
+        <section aria-labelledby="about-bio">
+          <h2 id="about-bio" class="text-lg font-semibold tracking-tight">
+            Introduction
+          </h2>
+          <div class="mt-4 space-y-4 text-base leading-relaxed text-muted">
+            {ABOUT.bio.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        </section>
+
+        <section class="mt-14" aria-labelledby="about-focus">
+          <h2 id="about-focus" class="text-lg font-semibold tracking-tight">
+            What I work on
+          </h2>
+          <ul class="mt-5 space-y-6">
+            {ABOUT.focus.map((area) => (
+              <li>
+                <h3 class="text-base font-medium text-ink">{area.title}</h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-muted">{area.description}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <div class="space-y-12">
+        <section aria-labelledby="about-skills">
+          <h2 id="about-skills" class="text-lg font-semibold tracking-tight">
+            Skills
+          </h2>
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {ABOUT.skills.map((skill) => (
+              <li>
+                <Tag tag={skill} link={false} />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="about-contact">
+          <h2 id="about-contact" class="text-lg font-semibold tracking-tight">
+            Get in touch
+          </h2>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li>
+              <a
+                href={SITE.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md text-muted transition-colors hover:text-ink"
+              >
+                <GitHubIcon class="h-4 w-4" />
+                <span>{SITE.github.replace(/^https?:\/\//, '')}</span>
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${SITE.email}`}
+                class="inline-flex items-center gap-2 rounded-md text-muted transition-colors hover:text-ink"
+              >
+                <Mail class="h-4 w-4" aria-hidden="true" />
+                <span>{SITE.email}</span>
+              </a>
+            </li>
+          </ul>
+
+          <p class="mt-6 text-sm leading-relaxed text-muted">
+            The fastest way to follow new posts is the{' '}
+            <a href={withBase('/rss.xml')} class="link-subtle hover:text-ink">
+              RSS feed
+            </a>
+            . Found a mistake? Open an issue on GitHub.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

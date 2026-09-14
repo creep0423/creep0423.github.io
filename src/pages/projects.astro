@@ -1,0 +1,28 @@
+---
+import ProjectCard from '@/components/ProjectCard.astro';
+import { projects } from '@/data/projects';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const description =
+  'Selected AI engineering projects: a retrieval-augmented generation pipeline, a tool-calling agent and an LLM experimentation playground.';
+---
+
+<BaseLayout title="Projects" description={description}>
+  <div class="container-page pt-14 sm:pt-20">
+    <header>
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Projects</h1>
+      <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+        Things I have built to understand how large language model systems behave in practice — each
+        one is small enough to read end to end.
+      </p>
+    </header>
+
+    <ul class="mt-12 grid gap-5 md:grid-cols-2">
+      {projects.map((project) => (
+        <li class="h-full">
+          <ProjectCard project={project} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

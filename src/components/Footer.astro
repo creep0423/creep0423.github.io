@@ -1,0 +1,57 @@
+---
+import { Mail, Rss } from '@lucide/astro';
+import GitHubIcon from '@/components/GitHubIcon.astro';
+import { SITE } from '@/config';
+import { withBase } from '@/lib/url';
+
+const year = new Date().getFullYear();
+
+const linkClass = 'inline-flex items-center gap-1.5 rounded-md transition-colors hover:text-ink';
+---
+
+<footer class="mt-24 border-t border-line">
+  <div class="container-page flex flex-col gap-6 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+    <p>
+      © {year} {SITE.author} · Built with{' '}
+      <a
+        href="https://astro.build"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-subtle hover:text-ink"
+      >
+        Astro
+      </a>{' '}
+      and{' '}
+      <a
+        href="https://tailwindcss.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-subtle hover:text-ink"
+      >
+        Tailwind CSS
+      </a>
+    </p>
+
+    <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <li>
+        <a href={SITE.github} target="_blank" rel="noopener noreferrer" class={linkClass}>
+          <GitHubIcon class="h-4 w-4" />
+          <span>GitHub</span>
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </li>
+      <li>
+        <a href={`mailto:${SITE.email}`} class={linkClass}>
+          <Mail class="h-4 w-4" aria-hidden="true" />
+          <span>Email</span>
+        </a>
+      </li>
+      <li>
+        <a href={withBase('/rss.xml')} class={linkClass}>
+          <Rss class="h-4 w-4" aria-hidden="true" />
+          <span>RSS</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>

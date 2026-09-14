@@ -1,0 +1,14 @@
+# Normalise line endings to LF so the build behaves identically on Windows,
+# macOS and Linux CI, and so formatted output matches across platforms.
+* text=auto eol=lf
+
+# Binary assets are never normalised.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
