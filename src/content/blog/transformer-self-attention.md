@@ -5,6 +5,8 @@ pubDate: 2026-02-08
 updatedDate: 2026-02-20
 tags: ['Transformer', 'Attention', 'PyTorch', 'Deep Learning']
 category: 'Deep Learning'
+series: 'transformer-from-zero'
+seriesOrder: 1
 featured: true
 draft: false
 ---

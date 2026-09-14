@@ -1,5 +1,7 @@
 ---
+import { Layers } from '@lucide/astro';
 import Tag from '@/components/Tag.astro';
+import { findSeries } from '@/data/series';
 import type { BlogPost } from '@/lib/posts';
 import { withBase } from '@/lib/url';
 import { formatDate, getReadingTimeMinutes, toISODate } from '@/lib/utils';
@@ -8,10 +10,33 @@ interface Props {
   post: BlogPost;
   /** Heading level for the card title, so pages keep a sane outline. */
   headingLevel?: 2 | 3 | 4;
+  /**
+   * Show the series a post belongs to. Off by default so that only the pages
+   * that opt in change; the cards on `/blog` and `/series/<slug>/` stay as they
+   * are.
+   */
+  showSeries?: boolean;
+  /**
+   * Render the "Featured" badge for `featured: true` posts. On by default, so
+   * every existing caller keeps its current look; the home page turns it off
+   * because its section heading already reads "Featured articles".
+   */
+  showFeaturedBadge?: boolean;
 }
 
-const { post, headingLevel = 3 } = Astro.props;
-const { title, description, pubDate, updatedDate, tags, category, draft, featured } = post.data;
+const { post, headingLevel = 3, showSeries = false, showFeaturedBadge = true } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  tags,
+  category,
+  draft,
+  featured,
+  series: seriesId,
+  seriesOrder,
+} = post.data;
 
 const Heading = `h${headingLevel}` as const;
 const href = withBase(`/blog/${post.id}/`);
@@ -19,6 +44,14 @@ const readingTime = getReadingTimeMinutes(post.body);
 // Drafts only exist in dev builds (see `getPublishedPosts`), so this badge
 // never reaches production.
 const isDraftPreview = draft && import.meta.env.DEV;
+
+// Resolved through `src/data/series.ts` so the card shows the series title, not
+// the id from frontmatter. An unknown id renders no series line at all.
+const series = showSeries && seriesId ? findSeries(seriesId) : undefined;
+const seriesHref = series ? withBase(`/series/${series.slug}/`) : null;
+// `Part` comes from the frontmatter order, so a post inside a series without an
+// explicit `seriesOrder` still shows its series name, just without a part.
+const seriesPart = series && seriesOrder !== undefined ? `Part ${seriesOrder}` : null;
 ---
 
 <article class="group">
@@ -36,7 +69,7 @@ const isDraftPreview = draft && import.meta.env.DEV;
         </span>
       </>
     )}
-    {featured && (
+    {featured && showFeaturedBadge && (
       <span class="rounded-full border border-accent/40 px-2 py-0.5 text-[0.7rem] text-accent">
         Featured
       </span>
@@ -45,6 +78,23 @@ const isDraftPreview = draft && import.meta.env.DEV;
       <span class="rounded-full border border-line px-2 py-0.5 text-[0.7rem]">Draft</span>
     )}
   </div>
+
+  {/* Sits above the title so the heading stays the focal point. A real link to
+      the series page — the card itself is not a link, so nothing nests. */}
+  {series && seriesHref && (
+    <p class="mt-2.5 flex flex-wrap items-center gap-x-1.5 text-xs text-muted">
+      <Layers class="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      <a href={seriesHref} class="rounded-sm font-medium transition-colors hover:text-accent">
+        {series.title}
+      </a>
+      {seriesPart && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>{seriesPart}</span>
+        </>
+      )}
+    </p>
+  )}
 
   <Heading class="mt-2.5 text-lg leading-snug font-semibold tracking-tight">
     <a href={href} class="rounded-sm transition-colors group-hover:text-accent">

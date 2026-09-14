@@ -23,10 +23,16 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
   return posts.sort(byNewestFirst);
 }
 
-/** The `limit` most recent posts, used by the home page. */
-export async function getLatestPosts(limit = 5): Promise<BlogPost[]> {
+/**
+ * Published posts marked `featured: true`, newest first — the home page list.
+ *
+ * Drafts are already filtered out by `getPublishedPosts()`, so a featured draft
+ * cannot reach production.
+ */
+export async function getFeaturedPosts(limit?: number): Promise<BlogPost[]> {
   const posts = await getPublishedPosts();
-  return posts.slice(0, limit);
+  const featured = posts.filter((post) => post.data.featured);
+  return limit === undefined ? featured : featured.slice(0, limit);
 }
 
 export interface PostNeighbours {

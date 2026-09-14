@@ -31,6 +31,16 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     /** Single section the post belongs to. */
     category: z.string(),
+    /**
+     * Id of the series this post belongs to, matching a `slug` in
+     * `src/data/series.ts`. Unknown ids are ignored at render time.
+     */
+    series: z.string().optional(),
+    /**
+     * Position of the post inside its series, ascending. Optional: a post that
+     * declares a `series` without an order is listed after the ordered ones.
+     */
+    seriesOrder: z.number().int().positive().optional(),
     /** Drafts are hidden from production builds. */
     draft: z.boolean().default(false),
     /** Highlighted on the home page when true. */

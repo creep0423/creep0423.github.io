@@ -2,25 +2,33 @@
 import { render } from 'astro:content';
 import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
 import { getNeighbours, getPublishedPosts } from '@/lib/posts';
+import { getSeriesContext } from '@/lib/series';
 
 /**
  * Static paths are generated from the published posts, so drafts never appear
  * in a production build. `Astro.site` + `base` are applied through
  * `BaseLayout`, which keeps canonical URLs correct on project pages.
+ *
+ * The series context is resolved here, from the already-loaded collection, so
+ * `BlogPostLayout` stays free of data queries.
  */
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
 
   return posts.map((post, index) => ({
     params: { slug: post.id },
-    props: { post, ...getNeighbours(posts, index) },
+    props: {
+      post,
+      ...getNeighbours(posts, index),
+      series: getSeriesContext(posts, post),
+    },
   }));
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, series } = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
-<BlogPostLayout post={post} headings={headings} newer={newer} older={older}>
+<BlogPostLayout post={post} headings={headings} newer={newer} older={older} series={series}>
   <Content />
 </BlogPostLayout>

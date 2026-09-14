@@ -2,12 +2,13 @@
 import 'katex/dist/katex.min.css';
 import '@/styles/article.css';
 
-import { ArrowLeft, ArrowRight, CalendarDays, Clock, RefreshCw } from '@lucide/astro';
+import { ArrowLeft, ArrowRight, CalendarDays, Clock, Layers, RefreshCw } from '@lucide/astro';
 import type { MarkdownHeading } from 'astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import Tag from '@/components/Tag.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { BlogPost } from '@/lib/posts';
+import type { SeriesContext } from '@/lib/series';
 import { withBase } from '@/lib/url';
 import { formatDate, getReadingTimeMinutes, toISODate } from '@/lib/utils';
 
@@ -19,13 +20,18 @@ interface Props {
   newer?: BlogPost;
   /** The next older post, when one exists. */
   older?: BlogPost;
+  /** Series the post belongs to; `null` when it is not part of a known series. */
+  series?: SeriesContext | null;
 }
 
-const { post, headings, newer, older } = Astro.props;
+const { post, headings, newer, older, series } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, category } = post.data;
 
 const readingTime = getReadingTimeMinutes(post.body);
 const backHref = withBase('/blog/');
+
+const seriesHref = series ? withBase(`/series/${series.slug}/`) : null;
+const partNumber = series ? series.index + 1 : 0;
 ---
 
 <BaseLayout
@@ -82,6 +88,22 @@ const backHref = withBase('/blog/');
             ))}
           </ul>
         )}
+
+        {/* Only rendered for posts that belong to a known series, so ordinary
+            posts keep exactly the same header. */}
+        {series && seriesHref && (
+          <p class="mt-5 inline-flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            <Layers class="h-3.5 w-3.5" aria-hidden="true" />
+            <span>Series:</span>
+            <a
+              href={seriesHref}
+              class="rounded-md font-medium text-ink transition-colors hover:text-accent"
+            >
+              {series.title}
+              <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        )}
       </header>
 
       {/* Collapsible table of contents on small screens; the sidebar version is
@@ -99,6 +121,67 @@ const backHref = withBase('/blog/');
         <div class="article-body mx-auto max-w-[46rem]" data-article-body>
           <slot />
         </div>
+
+        {/* Series navigation. The publication-order navigation below is left
+            untouched; this block is labelled so the two never read as the same
+            thing. Not rendered at all for posts outside a series. */}
+        {series && seriesHref && (
+          <section
+            class="mx-auto mt-16 max-w-[46rem] rounded-lg border border-line p-5"
+            aria-labelledby="series-navigation-heading"
+          >
+            <h2
+              id="series-navigation-heading"
+              class="text-xs font-semibold tracking-wide text-muted uppercase"
+            >
+              In this series
+            </h2>
+
+            <p class="mt-2 text-sm text-muted">
+              Part {partNumber} of {series.posts.length} ·{' '}
+              <a href={seriesHref} class="font-medium text-ink transition-colors hover:text-accent">
+                {series.title}
+              </a>
+            </p>
+
+            {(series.previous || series.next) && (
+              <ul class="mt-4 grid gap-4 sm:grid-cols-2">
+                {series.previous && (
+                  <li>
+                    <a
+                      href={withBase(`/blog/${series.previous.id}/`)}
+                      class="group flex h-full flex-col rounded-lg border border-line p-4 transition-colors hover:border-accent/40"
+                    >
+                      <span class="inline-flex items-center gap-1.5 text-xs text-muted">
+                        <ArrowLeft class="h-3.5 w-3.5" aria-hidden="true" />
+                        Previous in series
+                      </span>
+                      <span class="mt-1.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                        {series.previous.data.title}
+                      </span>
+                    </a>
+                  </li>
+                )}
+                {series.next && (
+                  <li class="sm:text-right">
+                    <a
+                      href={withBase(`/blog/${series.next.id}/`)}
+                      class="group flex h-full flex-col rounded-lg border border-line p-4 transition-colors hover:border-accent/40"
+                    >
+                      <span class="inline-flex items-center gap-1.5 text-xs text-muted sm:justify-end">
+                        Next in series
+                        <ArrowRight class="h-3.5 w-3.5" aria-hidden="true" />
+                      </span>
+                      <span class="mt-1.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                        {series.next.data.title}
+                      </span>
+                    </a>
+                  </li>
+                )}
+              </ul>
+            )}
+          </section>
+        )}
 
         <nav
           class="mx-auto mt-16 max-w-[46rem] border-t border-line pt-8"

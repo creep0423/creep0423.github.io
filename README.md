@@ -39,6 +39,8 @@ _Screenshot placeholder — drop an image into `public/images/` and reference it
 - Table of contents generated from the rendered headings, with scroll-based active highlighting
   (sticky sidebar on desktop, collapsible panel on mobile)
 - Newer / older post navigation derived from the publication order
+- Blog series: ordered multi-part reading lists with a series index, per-series pages and
+  previous/next navigation inside the series
 
 **Rendering**
 
@@ -108,20 +110,25 @@ ai-tech-blog/
 │   ├── content.config.ts           # collection + frontmatter schema
 │   ├── config.ts                   # single source of truth for personal information
 │   ├── data/
-│   │   └── projects.ts             # portfolio entries
+│   │   ├── projects.ts             # portfolio entries
+│   │   └── series.ts               # blog series registry (slug, title, description)
 │   ├── layouts/
 │   │   ├── BaseLayout.astro        # HTML shell, header/footer, SEO, theme bootstrap
-│   │   └── BlogPostLayout.astro    # post header, article body, TOC, prev/next
+│   │   └── BlogPostLayout.astro    # post header, article body, TOC, series + prev/next
 │   ├── lib/
 │   │   ├── posts.ts                # collection queries: published posts, tags, neighbours
 │   │   ├── projects.ts             # project → link normalisation
 │   │   ├── remark-base-links.mjs   # prefixes Markdown links with Astro's `base`
+│   │   ├── series.ts               # series ordering + per-post series context
 │   │   ├── url.ts                  # withBase() / absoluteUrl()
 │   │   └── utils.ts                # reading time, date formatting
 │   ├── pages/
 │   │   ├── blog/
 │   │   │   ├── [slug].astro        # article page (getStaticPaths)
 │   │   │   └── index.astro         # article list, search and tag filter
+│   │   ├── series/
+│   │   │   ├── [slug].astro        # one series, posts in reading order
+│   │   │   └── index.astro         # all series that have published posts
 │   │   ├── 404.astro
 │   │   ├── about.astro
 │   │   ├── index.astro             # hero, latest articles, featured projects, about preview
@@ -258,6 +265,8 @@ pubDate: 2026-03-02 # required
 updatedDate: 2026-03-14 # optional, shown only when present
 tags: ['RAG', 'Embedding', 'Vector DB'] # optional, defaults to []
 category: 'RAG' # required
+series: 'rag-from-zero' # optional, id from src/data/series.ts
+seriesOrder: 1 # optional, position inside the series
 draft: false # optional, defaults to false
 featured: false # optional, defaults to false, adds a badge
 ---
@@ -271,10 +280,48 @@ featured: false # optional, defaults to false, adds a badge
 | `updatedDate` | date       | no       | —       | Displayed and emitted when present              |
 | `tags`        | `string[]` | no       | `[]`    | Tag chips + `?tag=` filtering                   |
 | `category`    | `string`   | yes      | —       | Single section, shown as metadata               |
+| `series`      | `string`   | no       | —       | Series id; unknown ids render no series UI      |
+| `seriesOrder` | `number`   | no       | —       | Position inside the series, ascending           |
 | `draft`       | `boolean`  | no       | `false` | Visible in `dev`, hidden from production builds |
 | `featured`    | `boolean`  | no       | `false` | Adds a "Featured" badge                         |
 
 A malformed frontmatter block fails the build with a precise error — that is the point of the schema.
+
+### Blog series
+
+A series groups posts into an ordered reading list, served at `/series` and `/series/<slug>/`.
+
+1. Declare the series in `src/data/series.ts` — the `slug` is the stable id used in frontmatter and
+   in the URL, so the (Chinese) display title can change without breaking links:
+
+```ts
+export const blogSeries: BlogSeries[] = [
+  {
+    slug: 'rag-from-zero',
+    title: 'RAG 从入门到实战',
+    description:
+      '从 Embedding、Chunking、Vector Database 到完整 RAG Pipeline，系统理解 RAG 的核心原理与实践。',
+  },
+];
+```
+
+2. Reference it from each post with `series: '<slug>'` and give the parts an order:
+
+```yaml
+series: 'rag-from-zero'
+seriesOrder: 2
+```
+
+Posts of a series are ordered by `seriesOrder`. A post that declares a `series` but no
+`seriesOrder` is listed **after** the ordered ones instead of failing the build, and duplicate
+orders fall back to the publication date so the order is always deterministic. A post whose
+`series` is not present in `src/data/series.ts` still renders normally, without any series UI, and
+reports a warning in development only.
+
+Series pages reuse the blog's draft filtering: a series with no published posts simply does not
+appear, and drafts never show up inside a series. Article pages add a "Series: …" link in the
+metadata block and an "In this series" navigation (part counter plus previous/next within the
+series) next to the existing publication-order navigation.
 
 ### Drafts
 

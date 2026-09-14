@@ -4,6 +4,8 @@ description: '把 RAG 拆成 Document、Chunking、Embedding、Vector Database�
 pubDate: 2026-03-02
 tags: ['RAG', 'Embedding', 'Vector DB', 'LLM', 'Python']
 category: 'RAG'
+series: 'rag-from-zero'
+seriesOrder: 1
 featured: true
 draft: false
 ---

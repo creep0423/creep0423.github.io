@@ -7,10 +7,11 @@ import Tag from '@/components/Tag.astro';
 import { ABOUT, SITE } from '@/config';
 import { featuredProjects } from '@/data/projects';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getLatestPosts } from '@/lib/posts';
+import { getFeaturedPosts } from '@/lib/posts';
 import { withBase } from '@/lib/url';
 
-const posts = await getLatestPosts(5);
+// Featured posts only; drafts are filtered out inside `getFeaturedPosts()`.
+const posts = await getFeaturedPosts(5);
 const focusPreview = ABOUT.focus.slice(0, 4);
 
 const primaryButton =
@@ -46,10 +47,10 @@ const secondaryButton =
     </div>
   </section>
 
-  <section class="container-page mt-20 sm:mt-28" aria-labelledby="latest-articles">
+  <section class="container-page mt-20 sm:mt-28" aria-labelledby="featured-articles">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 id="latest-articles" class="text-lg font-semibold tracking-tight">
-        Latest articles
+      <h2 id="featured-articles" class="text-lg font-semibold tracking-tight">
+        Featured Articles
       </h2>
       <a
         href={withBase('/blog/')}
@@ -63,14 +64,14 @@ const secondaryButton =
       <ul class="mt-6 divide-y divide-line border-t border-line">
         {posts.map((post) => (
           <li class="py-7">
-            <BlogCard post={post} />
+            {/* The section heading already says "Featured Articles", so the
+                per-card badge would only repeat itself here. */}
+            <BlogCard post={post} showSeries showFeaturedBadge={false} />
           </li>
         ))}
       </ul>
     ) : (
-      <p class="mt-6 border-t border-line py-10 text-sm text-muted">
-        No articles published yet — the first one is on its way.
-      </p>
+      <p class="mt-6 border-t border-line py-10 text-sm text-muted">No featured articles yet.</p>
     )}
   </section>
 

@@ -1,0 +1,64 @@
+---
+import { ArrowLeft } from '@lucide/astro';
+import BlogCard from '@/components/BlogCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getSeriesWithPosts } from '@/lib/series';
+import { withBase } from '@/lib/url';
+
+/**
+ * One page per series that has at least one published post. Drafts are filtered
+ * out by `getSeriesWithPosts()` (which reads `getPublishedPosts()`), exactly
+ * like the blog index.
+ */
+export async function getStaticPaths() {
+  const allSeries = await getSeriesWithPosts();
+
+  return allSeries.map((series) => ({
+    params: { slug: series.slug },
+    props: { series },
+  }));
+}
+
+const { series } = Astro.props;
+const total = series.posts.length;
+// Built as a single string so a line break cannot swallow the separating space.
+const countLabel = `${total} ${total === 1 ? 'article' : 'articles'}`;
+---
+
+<BaseLayout title={series.title} description={series.description}>
+  <div class="container-page pt-10 sm:pt-14">
+    <div class="mx-auto max-w-[46rem]">
+      <a
+        href={withBase('/series/')}
+        class="inline-flex items-center gap-1.5 rounded-md text-sm text-muted transition-colors hover:text-ink"
+      >
+        <ArrowLeft class="h-4 w-4" aria-hidden="true" />
+        <span>All series</span>
+      </a>
+
+      <header class="mt-7">
+        <h1 class="text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
+          {series.title}
+        </h1>
+
+        <p class="mt-4 text-base leading-relaxed text-muted">{series.description}</p>
+
+        <p class="mt-5 text-xs text-muted">{countLabel}</p>
+      </header>
+
+      <ol class="mt-10 divide-y divide-line border-t border-line">
+        {series.posts.map((post, index) => (
+          <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 py-7">
+            {/* The list is already ordered, so the number is decorative. It
+                  doubles as the part number and stays contiguous even when
+                  `seriesOrder` has gaps or is missing. */}
+            <span class="pt-0.5 font-mono text-sm text-muted" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <BlogCard post={post} headingLevel={2} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</BaseLayout>

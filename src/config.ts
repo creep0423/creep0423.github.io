@@ -67,6 +67,7 @@ export const SITE: SiteConfig = {
 /** Primary navigation, rendered by `src/components/Header.astro`. */
 export const NAV: NavItem[] = [
   { label: 'Blog', href: '/blog/' },
+  { label: 'Series', href: '/series/' },
   { label: 'Projects', href: '/projects/' },
   { label: 'About', href: '/about/' },
 ];
