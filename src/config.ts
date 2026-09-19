@@ -27,10 +27,16 @@ export interface SiteConfig {
   locale: string;
   /** Fallback origin, only used when `Astro.site` is unavailable. */
   url: string;
-  /** Author name, used by SEO metadata, the RSS channel and the home hero. */
+  /** Author name, used by the SEO metadata, the RSS channel and the footer. */
   author: string;
-  /** Job title, shown next to the author name in the hero section. */
+  /** Job title, used by the SEO fallback title and the About page hero. */
   jobTitle: string;
+  /**
+   * Home hero eyebrow: the short greeting above the positioning statement.
+   * Kept apart from `author`, because the nickname shown on the home page does
+   * not belong in metadata, the footer or the About page.
+   */
+  heroEyebrow: string;
   /**
    * One-sentence positioning statement: the `<h1>` of the home page, and the
    * most prominent line on the whole site.
@@ -72,7 +78,8 @@ export const SITE: SiteConfig = {
   locale: 'zh_CN',
   url: 'http://localhost:4321',
   author: 'Your Name',
-  jobTitle: 'AI / LLM / Backend Developer',
+  jobTitle: 'AI / LLM Application Engineer',
+  heroEyebrow: "Hi, I'm CREEP 👋",
   // The home page `<h1>`. One sentence, with a point of view.
   //
   // The line break in the hero comes from the sentence comma (see
@@ -80,12 +87,12 @@ export const SITE: SiteConfig = {
   // characters, so a headline left to wrap on its own can split a word in half.
   // `headlineAccent` is the phrase that carries the hero accent colour; the
   // final full stop is part of it so the accented line ends cleanly.
-  headline: '从原理到工程，把大模型真正做成系统。',
-  headlineAccent: '真正做成系统。',
-  tagline: '记录 LLM、RAG 与 Agent 的原理、实现、实验与踩坑。',
-  techTags: ['LLM', 'RAG', 'AI Agent', 'PyTorch', 'Python'],
-  github: 'https://github.com/yourname',
-  email: 'your.email@example.com',
+  headline: '比答案更重要的，是它从何而来。',
+  headlineAccent: '从何而来。',
+  tagline: '探索 LLM、RAG 与 AI Agent 背后的原理、方法与边界。',
+  techTags: ['LLM', 'RAG', 'AI Agent', 'GraphRAG', 'Deep Learning', 'Model Evaluation'],
+  github: 'https://github.com/creep0423',
+  email: 'creephanhan@gmail.com',
   // Add a file to `public/images/` and point this at it to enable the
   // `og:image` / `twitter:image` tags, e.g. '/images/og-default.png'.
   ogImage: undefined,
@@ -108,7 +115,7 @@ export interface FocusArea {
 export interface AboutConfig {
   /** Introduction paragraphs, rendered in order on the About page. */
   bio: string[];
-  /** Areas of interest, rendered on the About page and the home page preview. */
+  /** Areas of interest, rendered on the About page. */
   focus: FocusArea[];
   /** Skill keywords, rendered as tags on the About page. */
   skills: string[];
@@ -116,31 +123,86 @@ export interface AboutConfig {
 
 export const ABOUT: AboutConfig = {
   bio: [
-    "I'm an AI engineer who enjoys building things end to end — from the data pipeline to the interface in front of it. Most of my time goes into large language models: how they retrieve context, how they call tools, and how far they can be trusted.",
-    'This blog is where I write down what I learn while building. Posts are usually written from scratch — implementing an idea first, then explaining the parts that were not obvious the first time around.',
-    'I care about readable code, clear explanations and small systems that are easy to reason about.',
+    '我主要关注如何把大语言模型真正放进复杂任务中：让它获取可靠的上下文、连接知识与数据、调用工具，并在明确的工作流中完成判断与执行。相比让模型“给出一个答案”，我更关心这个答案从哪里来、经过了什么过程，以及它是否值得被信任。',
+    '这个博客记录我在构建 AI 应用过程中的问题、方法与思考。从 RAG、AI Agent 到 Knowledge Graph 与 Model Evaluation，我会尝试把一个想法做成可以运行的系统，再回头理解哪些设计真正有效，哪些只是在理想条件下成立。',
+    '我喜欢可读的代码、清晰的系统边界和能够被验证的技术结论。对我来说，一个系统为什么失败、证据在哪里丢失、决策如何形成，往往和它最终能不能跑起来一样重要。',
   ],
   focus: [
     {
       title: 'Large Language Models',
-      description: 'Prompting, fine-tuning and inference trade-offs across open and hosted models.',
+      description:
+        '关注模型的上下文能力、推理与生成行为，以及如何把通用模型能力转化为可用的应用能力。',
     },
     {
-      title: 'Retrieval-Augmented Generation',
-      description: 'Chunking strategies, embeddings, vector search and grounding quality.',
+      title: 'RAG & Knowledge Systems',
+      description:
+        '探索 Chunking、Embedding、Hybrid Retrieval、Reranking、GraphRAG，以及知识如何被组织、检索并最终成为模型判断的依据。',
     },
     {
-      title: 'AI Agents',
-      description: 'Tool calling, task planning and reliable multi-step execution.',
+      title: 'AI Agents & Workflows',
+      description:
+        '关注 Tool Calling、任务规划、状态管理与多步工作流，以及 Agent 如何在有约束的任务中可靠地执行和协作。',
     },
     {
-      title: 'Deep Learning',
-      description: 'Transformer internals and applied PyTorch experiments.',
+      title: 'Deep Learning & Model Evaluation',
+      description:
+        '学习 Transformer、Deep Learning 与 PyTorch，也关注如何通过 Evaluation 理解模型真正做对了什么、又会在哪里失效。',
     },
     {
-      title: 'Backend Engineering',
-      description: 'APIs, packaging, CI/CD and the infrastructure that keeps demos running.',
+      title: 'AI Systems Engineering',
+      description:
+        '关注 API、数据流、权限、可观测性与服务集成，让模型、数据和业务逻辑能够组成真正可运行、可维护的系统。',
     },
   ],
-  skills: ['Python', 'PyTorch', 'LLM', 'RAG', 'Git', 'Docker', 'TypeScript'],
+  skills: [
+    'Python',
+    'LangChain',
+    'LangGraph',
+    'RAG',
+    'GraphRAG',
+    'AI Agent',
+    'MCP',
+    'Knowledge Graph',
+    'FastAPI',
+    'Docker',
+  ],
+};
+
+export interface AboutPreviewConfig {
+  /** Introduction paragraph, rendered in the home page's About preview. */
+  intro: string;
+  /** Areas of interest, rendered beside the intro on the home page. */
+  focus: FocusArea[];
+}
+
+/**
+ * Home page About preview.
+ *
+ * Kept apart from `ABOUT` on purpose: the home page carries a short positioning
+ * paragraph and four areas of interest, while `/about/` keeps its longer bio,
+ * five areas and the skills list. The two are edited on their own schedules.
+ */
+export const ABOUT_PREVIEW: AboutPreviewConfig = {
+  intro:
+    '关注大语言模型如何获取可靠的上下文、连接知识与数据、调用工具，以及它们在复杂任务中的能力边界。这里记录对 LLM、RAG、AI Agent 与相关方法的学习、实践与思考。',
+  focus: [
+    {
+      title: 'Large Language Models',
+      description:
+        '关注模型的上下文能力、推理与生成行为，以及通用模型能力如何转化为可用的应用能力。',
+    },
+    {
+      title: 'RAG & Knowledge Systems',
+      description:
+        '探索检索、Embedding、Reranking 与 GraphRAG，以及知识如何被组织并成为模型判断的依据。',
+    },
+    {
+      title: 'AI Agents & Workflows',
+      description: '探索 Tool Calling、任务规划与多步工作流，以及 Agent 在复杂任务中的执行方式。',
+    },
+    {
+      title: 'Deep Learning & Model Evaluation',
+      description: '关注 Transformer、Deep Learning、PyTorch 与模型能力评测。',
+    },
+  ],
 };

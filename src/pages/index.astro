@@ -4,7 +4,7 @@ import BlogCard from '@/components/BlogCard.astro';
 import GitHubIcon from '@/components/GitHubIcon.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
 import Tag from '@/components/Tag.astro';
-import { ABOUT, SITE } from '@/config';
+import { ABOUT_PREVIEW, SITE } from '@/config';
 import { featuredProjects } from '@/data/projects';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getFeaturedPosts } from '@/lib/posts';
@@ -12,7 +12,7 @@ import { withBase } from '@/lib/url';
 
 // Featured posts only; drafts are filtered out inside `getFeaturedPosts()`.
 const posts = await getFeaturedPosts(5);
-const focusPreview = ABOUT.focus.slice(0, 4);
+const focusPreview = ABOUT_PREVIEW.focus;
 
 /**
  * Hero typography, derived from the copy in `config.ts` so the text stays in one
@@ -144,9 +144,7 @@ const sectionLink =
       arriving from a shared post need a reason to stay, which a name alone does
       not give them.
     */}
-    <p class="text-sm font-medium text-muted">
-      {SITE.author} · {SITE.jobTitle}
-    </p>
+    <p class="text-sm font-medium text-muted">{SITE.heroEyebrow}</p>
     <h1 class="mt-3 max-w-3xl text-2xl leading-tight font-semibold tracking-tight sm:text-4xl lg:text-5xl">
       {headlineLines.map((line) => (
         <span class="block">
@@ -234,7 +232,9 @@ const sectionLink =
 
     <div class="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
       <div class="relative">
-        <p class="max-w-2xl text-base leading-relaxed text-muted text-pretty">{ABOUT.bio[0]}</p>
+        <p class="max-w-2xl text-base leading-relaxed text-muted text-pretty">
+          {ABOUT_PREVIEW.intro}
+        </p>
         <a
           href={withBase('/about/')}
           class="mt-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-ink transition-colors hover:text-[var(--hero-accent)]"
