@@ -16,8 +16,14 @@ const { tag, link = true, class: className = '' } = Astro.props;
  */
 const href = `${withBase('/blog/')}?tag=${encodeURIComponent(tag)}`;
 
+/*
+   One neutral chip style for every tag on the site — no per-topic colours.
+   Hover feedback is added only for the interactive variant, so a plain skill
+   chip never looks clickable.
+*/
 const classes = [
-  'inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-1 text-xs leading-none text-muted transition-colors hover:border-accent/50 hover:text-ink',
+  'inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-1 text-xs leading-none text-muted',
+  link ? 'transition-colors hover:border-accent/40 hover:text-ink' : '',
   className,
 ]
   .filter(Boolean)

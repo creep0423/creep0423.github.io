@@ -13,19 +13,20 @@ const { project } = Astro.props;
 const links = getProjectLinks(project);
 ---
 
-<article class="flex h-full flex-col rounded-xl border border-line bg-surface/60 p-6 transition-colors hover:border-accent/40">
+<article class="card-cool flex h-full flex-col rounded-lg border border-line bg-surface/60 p-6 transition-colors hover:border-accent/40 hover:bg-surface">
   <header class="flex items-baseline justify-between gap-4">
-    <h3 class="text-base font-semibold tracking-tight text-ink">{project.title}</h3>
-    <span class="text-xs text-muted">{project.year}</span>
+    <h3 class="text-lg leading-snug font-semibold tracking-tight text-ink">{project.title}</h3>
+    <span class="text-xs tabular-nums text-muted">{project.year}</span>
   </header>
 
-  <p class="mt-3 text-sm leading-relaxed text-muted">{project.description}</p>
+  <p class="mt-3 text-sm leading-relaxed text-muted text-pretty">{project.description}</p>
 
   {project.highlights.length > 0 && (
     <ul class="mt-4 space-y-1.5 text-sm text-muted">
       {project.highlights.map((highlight) => (
         <li class="flex gap-2.5">
-          <span aria-hidden="true" class="text-accent">
+          {/* Decorative marker: muted, so the accent stays reserved for links. */}
+          <span aria-hidden="true" class="text-muted/70">
             –
           </span>
           <span>{highlight}</span>

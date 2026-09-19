@@ -6,18 +6,19 @@ import { withBase } from '@/lib/url';
 
 const year = new Date().getFullYear();
 
-const linkClass = 'inline-flex items-center gap-1.5 rounded-md transition-colors hover:text-ink';
+const linkClass =
+  'inline-flex items-center gap-1.5 rounded-md transition-colors hover:text-[var(--hero-accent)]';
 ---
 
-<footer class="mt-24 border-t border-line">
-  <div class="container-page flex flex-col gap-6 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+<footer class="site-footer mt-20 border-t border-line sm:mt-24">
+  <div class="container-page flex flex-col gap-6 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:py-12">
     <p>
       © {year} {SITE.author} · Built with{' '}
       <a
         href="https://astro.build"
         target="_blank"
         rel="noopener noreferrer"
-        class="link-subtle hover:text-ink"
+        class="link-subtle hover:text-[var(--hero-accent)]"
       >
         Astro
       </a>{' '}
@@ -26,7 +27,7 @@ const linkClass = 'inline-flex items-center gap-1.5 rounded-md transition-colors
         href="https://tailwindcss.com"
         target="_blank"
         rel="noopener noreferrer"
-        class="link-subtle hover:text-ink"
+        class="link-subtle hover:text-[var(--hero-accent)]"
       >
         Tailwind CSS
       </a>

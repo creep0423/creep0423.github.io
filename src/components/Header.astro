@@ -24,14 +24,14 @@ function isActive(href: string): boolean {
   );
 }
 
-const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
+const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors hover:bg-surface hover:text-ink';
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-canvas">
-  <div class="container-page flex h-16 items-center justify-between gap-6">
+<header class="sticky top-0 z-40 border-b border-line bg-canvas supports-[backdrop-filter]:bg-canvas/80 supports-[backdrop-filter]:backdrop-blur-md">
+  <div class="container-page flex h-14 items-center justify-between gap-6 md:h-16">
     <a
       href={withBase('/')}
-      class="rounded-md text-[0.95rem] font-semibold tracking-tight text-ink"
+      class="rounded-md text-base font-semibold tracking-tight text-ink"
       aria-label={`${SITE.title} — home`}
     >
       {SITE.title}
@@ -45,7 +45,7 @@ const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
             aria-current={isActive(item.href) ? 'page' : undefined}
             class:list={[
               linkBase,
-              isActive(item.href) ? 'font-medium text-ink' : 'text-muted hover:text-ink',
+              isActive(item.href) ? 'bg-surface font-medium text-ink' : 'text-muted',
             ]}
           >
             {item.label}
@@ -55,7 +55,7 @@ const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
           href={SITE.github}
           target="_blank"
           rel="noopener noreferrer"
-          class:list={[linkBase, 'inline-flex items-center gap-2 text-muted hover:text-ink']}
+          class:list={[linkBase, 'inline-flex items-center gap-2 text-muted']}
         >
           <GitHubIcon class="h-4 w-4" />
           <span>GitHub</span>
@@ -67,12 +67,12 @@ const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
 
       <details class="relative md:hidden">
         <summary class="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-ink [&::-webkit-details-marker]:hidden">
-          <Menu class="h-5 w-5" aria-hidden="true" />
+          <Menu class="h-4 w-4" aria-hidden="true" />
           <span class="sr-only">Open main menu</span>
         </summary>
 
         <nav
-          class="absolute top-full right-0 z-50 mt-2 w-52 rounded-lg border border-line bg-canvas p-2 shadow-sm"
+          class="absolute top-full right-0 z-50 mt-2 w-52 rounded-lg border border-line bg-canvas p-1.5 shadow-sm"
           aria-label="Mobile"
         >
           <ul class="flex flex-col">
@@ -82,8 +82,8 @@ const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
                   href={withBase(item.href)}
                   aria-current={isActive(item.href) ? 'page' : undefined}
                   class:list={[
-                    'block rounded-md px-3 py-2.5 text-sm transition-colors',
-                    isActive(item.href) ? 'font-medium text-ink' : 'text-muted hover:text-ink',
+                    'block rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-surface hover:text-ink',
+                    isActive(item.href) ? 'bg-surface font-medium text-ink' : 'text-muted',
                   ]}
                 >
                   {item.label}
@@ -95,7 +95,7 @@ const linkBase = 'rounded-md px-3 py-2 text-sm transition-colors';
                 href={SITE.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm text-muted transition-colors hover:text-ink"
+                class="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-ink"
               >
                 <GitHubIcon class="h-4 w-4" />
                 <span>GitHub</span>

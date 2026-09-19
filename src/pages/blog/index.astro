@@ -1,6 +1,7 @@
 ---
 import { Search } from '@lucide/astro';
 import BlogCard from '@/components/BlogCard.astro';
+import PageHero from '@/components/PageHero.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getPublishedPosts, getTagCounts } from '@/lib/posts';
 
@@ -21,24 +22,23 @@ const items = posts.map((post) => ({
 }));
 
 const filterButton =
-  'inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-xs text-muted transition-colors hover:text-ink';
+  'inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs leading-none text-muted transition-colors hover:border-accent/40 hover:text-ink';
 ---
 
 <BaseLayout
   title="Blog"
   description="Technical articles about large language models, retrieval-augmented generation, AI agents and deep learning."
 >
-  <div class="container-page pt-14 sm:pt-20">
-    <header>
-      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Blog</h1>
-      <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
-        Notes from building with large language models: retrieval pipelines, agents, transformers
-        and the engineering around them. Everything is written while implementing it, so the code is
-        real.
-      </p>
-    </header>
+  <PageHero
+    title="Blog"
+    description="Notes from building with large language models: retrieval pipelines, agents, transformers and the engineering around them. Everything is written while implementing it, so the code is real."
+    motif="blog"
+  />
 
-    <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  {/* The toolbar and the list stay outside the hero: the hero's own bottom
+      padding is the gap between the two. */}
+  <div class="container-page">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="relative w-full sm:max-w-xs">
         <Search
           class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted"
@@ -56,7 +56,9 @@ const filterButton =
         />
       </div>
 
-      <p id="post-count" class="text-sm text-muted" aria-live="polite">
+      {/* Tabular figures, like every other number on the site, so the count does
+          not reflow as it changes while filtering. */}
+      <p id="post-count" class="text-sm tabular-nums text-muted" aria-live="polite">
         {posts.length} articles
       </p>
     </div>
@@ -78,7 +80,7 @@ const filterButton =
 
     <ul id="post-list" class="mt-8 divide-y divide-line border-t border-line">
       {items.map(({ post, search, tags }) => (
-        <li class="py-7" data-post-item data-search={search} data-tags={tags.join('|')}>
+        <li class="py-6 sm:py-7" data-post-item data-search={search} data-tags={tags.join('|')}>
           <BlogCard post={post} headingLevel={2} />
         </li>
       ))}

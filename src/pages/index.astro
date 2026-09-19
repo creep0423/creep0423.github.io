@@ -14,19 +14,153 @@ import { withBase } from '@/lib/url';
 const posts = await getFeaturedPosts(5);
 const focusPreview = ABOUT.focus.slice(0, 4);
 
+/**
+ * Hero typography, derived from the copy in `config.ts` so the text stays in one
+ * place. Two presentation rules that are not content live here:
+ *
+ * - every sentence comma starts a new line. Chinese breaks between any two
+ *   characters, so a headline left to the browser can split a word in half; the
+ *   comma is where the two halves read as balanced lines anyway.
+ * - the accent phrase keeps its own colour.
+ *
+ * Both rules degrade to plain text if the copy stops matching them.
+ */
+interface HeadlineToken {
+  text: string;
+  accent: boolean;
+}
+
+const accentPhrase = SITE.headlineAccent?.trim() ?? '';
+
+function toHeadlineTokens(line: string): HeadlineToken[] {
+  const at = accentPhrase ? line.indexOf(accentPhrase) : -1;
+  if (at === -1) return [{ text: line, accent: false }];
+
+  return [
+    { text: line.slice(0, at), accent: false },
+    { text: accentPhrase, accent: true },
+    { text: line.slice(at + accentPhrase.length), accent: false },
+  ].filter((token) => token.text.length > 0);
+}
+
+const headlineLines = SITE.headline
+  .split('，')
+  .map((part, index, parts) => (index < parts.length - 1 ? `${part}，` : part))
+  .map(toHeadlineTokens);
+
+// The primary button keeps its near-black fill and only picks up a trace of the
+// hero accent on hover. `color-mix` is written inline so it follows the theme
+// tokens instead of introducing a second, hard-coded colour.
 const primaryButton =
-  'inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90';
+  'inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-canvas transition-colors hover:bg-[color-mix(in_oklab,var(--ink)_68%,var(--hero-accent))]';
 const secondaryButton =
-  'inline-flex items-center gap-2 rounded-md border border-line px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-surface';
+  'inline-flex items-center gap-2 rounded-md border border-line px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:border-ink/20 hover:bg-surface';
+
+// All three home section headings share one class, which draws the small accent
+// rule under each of them (see `global.css`).
+const sectionHeading = 'home-section-heading text-xl font-semibold tracking-tight sm:text-2xl';
+// The home page's own links answer to the hero accent; links inside the article
+// cards keep the site accent, because those cards are shared with `/blog`.
+const sectionLink =
+  'rounded-md text-sm text-muted transition-colors hover:text-[var(--hero-accent)]';
 ---
 
 <BaseLayout>
-  <section class="container-page pt-16 pb-2 sm:pt-24">
-    <p class="text-sm font-medium text-muted">{SITE.jobTitle}</p>
-    <h1 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Hi, I'm {SITE.author} 👋</h1>
-    <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">{SITE.tagline}</p>
+  {/*
+    `relative isolate` keeps the two decorative layers below inside this section
+    and behind its text, and guarantees they can never reach the sticky header's
+    stacking context.
+  */}
+  <section class="container-page relative isolate pt-14 pb-2 sm:pt-20">
+    <div class="hero-atmosphere" aria-hidden="true"></div>
 
-    <ul class="mt-7 flex flex-wrap gap-2">
+    {/*
+      Technical line art: nodes, connectors, a module flow and a few dots, at
+      watermark strength. Hidden on phones, reduced and moved below the headline
+      on tablets, and kept in the right third from `lg` upwards so it never runs
+      through the copy. Decorative only: no label, no interaction.
+    */}
+    <svg
+      class="hero-line-art pointer-events-none absolute top-[46%] right-0 hidden h-auto w-[34%] max-w-[20rem] md:block lg:top-6 lg:w-[40%] lg:max-w-[26rem]"
+      viewBox="0 0 420 300"
+      fill="none"
+      stroke-width="1"
+      stroke-linecap="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* Node graph, with two connectors running off towards the copy. */}
+      <g stroke="currentColor">
+        <path d="M28 132 H74 M74 60 V132 M74 60 H140 M74 132 H150 M140 60 L206 96 M150 132 L206 96" />
+        <path d="M206 96 H262 M262 96 V150 M262 150 H318" />
+      </g>
+      <g fill="currentColor" stroke="none">
+        <circle cx="28" cy="132" r="2.4" />
+        <circle cx="74" cy="60" r="3.2" />
+        <circle cx="74" cy="132" r="2.4" />
+        <circle cx="140" cy="60" r="2.4" />
+        <circle cx="150" cy="132" r="2.4" />
+        <circle cx="206" cy="96" r="3.6" />
+        <circle cx="262" cy="96" r="2.4" />
+        <circle cx="262" cy="150" r="2.4" />
+        <circle cx="318" cy="150" r="3.2" />
+      </g>
+
+      {/* Two uneven blocks rather than a row of three: enough to suggest a flow,
+          not enough to read as a wireframe or a flow chart. */}
+      <g class="is-neutral" stroke="currentColor">
+        <rect x="104" y="210" width="58" height="24" rx="5" />
+        <rect x="246" y="220" width="42" height="20" rx="5" />
+        <path d="M162 222 H196 L212 230 H246" />
+        <path d="M288 230 H316" />
+      </g>
+
+      {/* Uneven marks where the regular blocks used to sit. */}
+      <g class="is-neutral" fill="currentColor" stroke="none">
+        <circle cx="180" cy="262" r="1.4" />
+        <circle cx="206" cy="276" r="1.4" />
+        <circle cx="238" cy="264" r="1.4" />
+        <circle cx="272" cy="278" r="1.4" />
+        <circle cx="308" cy="266" r="1.4" />
+      </g>
+
+      {/* Sparse marks: enough to suggest a matrix, not enough to read as one. */}
+      <g class="is-neutral" fill="currentColor" stroke="none">
+        <circle cx="352" cy="38" r="1.6" />
+        <circle cx="378" cy="38" r="1.6" />
+        <circle cx="404" cy="38" r="1.6" />
+        <circle cx="352" cy="58" r="1.6" />
+        <circle cx="404" cy="58" r="1.6" />
+        <circle cx="378" cy="78" r="1.6" />
+        <circle cx="404" cy="78" r="1.6" />
+        <circle cx="186" cy="44" r="1.6" />
+        <circle cx="214" cy="44" r="1.6" />
+        <circle cx="214" cy="66" r="1.6" />
+      </g>
+    </svg>
+
+    {/*
+      Identity is the eyebrow, the positioning statement is the heading: readers
+      arriving from a shared post need a reason to stay, which a name alone does
+      not give them.
+    */}
+    <p class="text-sm font-medium text-muted">
+      {SITE.author} · {SITE.jobTitle}
+    </p>
+    <h1 class="mt-3 max-w-3xl text-2xl leading-tight font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+      {headlineLines.map((line) => (
+        <span class="block">
+          {line.map((token) =>
+            token.accent ? <span class="hero-accent">{token.text}</span> : token.text,
+          )}
+        </span>
+      ))}
+    </h1>
+    <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted text-pretty sm:text-lg">
+      {SITE.tagline}
+    </p>
+
+    <ul class="hero-tags mt-6 flex flex-wrap gap-2">
       {SITE.techTags.map((technology) => (
         <li>
           <Tag tag={technology} link={false} />
@@ -34,7 +168,7 @@ const secondaryButton =
       ))}
     </ul>
 
-    <div class="mt-9 flex flex-wrap gap-3">
+    <div class="mt-8 flex flex-wrap gap-3">
       <a href={withBase('/blog/')} class={primaryButton}>
         <span>View blog</span>
         <ArrowRight class="h-4 w-4" aria-hidden="true" />
@@ -47,23 +181,22 @@ const secondaryButton =
     </div>
   </section>
 
-  <section class="container-page mt-20 sm:mt-28" aria-labelledby="featured-articles">
+  {/* Slightly tighter than the gaps further down: the first section should come
+      into view on a laptop screen without the hero feeling cramped. */}
+  <section class="container-page mt-12 sm:mt-20" aria-labelledby="featured-articles">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 id="featured-articles" class="text-lg font-semibold tracking-tight">
+      <h2 id="featured-articles" class={sectionHeading}>
         Featured Articles
       </h2>
-      <a
-        href={withBase('/blog/')}
-        class="rounded-md text-sm text-muted transition-colors hover:text-ink"
-      >
+      <a href={withBase('/blog/')} class={sectionLink}>
         All articles →
       </a>
     </div>
 
     {posts.length > 0 ? (
-      <ul class="mt-6 divide-y divide-line border-t border-line">
+      <ul class="home-article-list mt-6 divide-y divide-line border-t border-line">
         {posts.map((post) => (
-          <li class="py-7">
+          <li class="py-6 sm:py-7">
             {/* The section heading already says "Featured Articles", so the
                 per-card badge would only repeat itself here. */}
             <BlogCard post={post} showSeries showFeaturedBadge={false} />
@@ -75,15 +208,12 @@ const secondaryButton =
     )}
   </section>
 
-  <section class="container-page mt-20 sm:mt-28" aria-labelledby="featured-projects">
+  <section class="container-page mt-16 sm:mt-24" aria-labelledby="featured-projects">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 id="featured-projects" class="text-lg font-semibold tracking-tight">
+      <h2 id="featured-projects" class={sectionHeading}>
         Featured projects
       </h2>
-      <a
-        href={withBase('/projects/')}
-        class="rounded-md text-sm text-muted transition-colors hover:text-ink"
-      >
+      <a href={withBase('/projects/')} class={sectionLink}>
         All projects →
       </a>
     </div>
@@ -97,28 +227,66 @@ const secondaryButton =
     </ul>
   </section>
 
-  <section class="container-page mt-20 sm:mt-28" aria-labelledby="about-preview">
-    <h2 id="about-preview" class="text-lg font-semibold tracking-tight">
+  <section class="container-page mt-16 sm:mt-24" aria-labelledby="about-preview">
+    <h2 id="about-preview" class={sectionHeading}>
       About
     </h2>
 
     <div class="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
-      <div>
-        <p class="max-w-2xl text-base leading-relaxed text-muted">{ABOUT.bio[0]}</p>
+      <div class="relative">
+        <p class="max-w-2xl text-base leading-relaxed text-muted text-pretty">{ABOUT.bio[0]}</p>
         <a
           href={withBase('/about/')}
-          class="mt-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-ink transition-colors hover:text-accent"
+          class="mt-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-ink transition-colors hover:text-[var(--hero-accent)]"
         >
           <span>More about me</span>
           <ArrowRight class="h-4 w-4" aria-hidden="true" />
         </a>
+
+        {/*
+          A faint echo of the hero motif, sitting in the whitespace under the bio
+          and answering the hero across the page (hero top-right, this one in the
+          lower left). A sparser, more abstract branching drawing than the hero —
+          five nodes, one branching spine, a few loose marks — so the two read as
+          one family without repeating the artwork. Absolute, so it can never
+          move content or change the section height; `lg` only, because below
+          that this column has no empty space to sit in.
+        */}
+        <svg
+          class="about-motif pointer-events-none absolute bottom-0 left-[14%] hidden h-auto w-[48%] lg:block"
+          viewBox="0 0 220 120"
+          fill="none"
+          stroke-width="1"
+          stroke-linecap="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {/* One spine with two branches: in from the left, up, and down-right
+              to a second node. No boxes, no flow-chart shapes. */}
+          <g stroke="currentColor">
+            <path d="M34 60 H96 M96 60 L128 26 M96 60 L124 92 M124 92 H186" />
+          </g>
+          <g fill="currentColor" stroke="none">
+            <circle cx="34" cy="60" r="2.2" />
+            <circle cx="96" cy="60" r="3" />
+            <circle cx="128" cy="26" r="2" />
+            <circle cx="124" cy="92" r="2.2" />
+            <circle cx="186" cy="92" r="2.6" />
+          </g>
+          <g class="is-neutral" fill="currentColor" stroke="none">
+            <circle cx="58" cy="32" r="1.2" />
+            <circle cx="72" cy="94" r="1.2" />
+            <circle cx="156" cy="64" r="1.2" />
+            <circle cx="198" cy="42" r="1.2" />
+          </g>
+        </svg>
       </div>
 
       <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
         {focusPreview.map((area) => (
           <li>
-            <h3 class="text-sm font-medium text-ink">{area.title}</h3>
-            <p class="mt-1 text-sm leading-relaxed text-muted">{area.description}</p>
+            <h3 class="text-sm font-semibold text-ink">{area.title}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-muted text-pretty">{area.description}</p>
           </li>
         ))}
       </ul>

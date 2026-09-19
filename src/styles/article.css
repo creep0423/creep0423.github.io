@@ -22,6 +22,12 @@
   margin-top: 0;
 }
 
+/* Avoids a single trailing word on the last line of a Latin paragraph; CJK
+   text is unaffected because it has no word gaps to rebalance. */
+.article-body p {
+  text-wrap: pretty;
+}
+
 /* --- Headings ------------------------------------------------------------- */
 
 .article-body :is(h2, h3, h4, h5, h6) {
@@ -33,30 +39,37 @@
   scroll-margin-top: 6rem;
 }
 
+/* A post that opens with a heading needs no separator above it. */
+.article-body > :first-child:is(h2, h3, h4, h5, h6) {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .article-body h2 {
-  margin-top: 2.75em;
-  margin-bottom: 0.9em;
-  padding-top: 1.6em;
+  margin-top: 2.6em;
+  margin-bottom: 0.85em;
+  padding-top: 1.5em;
   font-size: 1.5rem;
   border-top: 1px solid var(--line);
 }
 
 .article-body h3 {
-  margin-top: 2.1em;
-  margin-bottom: 0.7em;
-  font-size: 1.2rem;
+  margin-top: 2em;
+  margin-bottom: 0.65em;
+  font-size: 1.1875rem;
 }
 
 .article-body h4 {
-  margin-top: 1.75em;
-  margin-bottom: 0.6em;
-  font-size: 1.05rem;
+  margin-top: 1.7em;
+  margin-bottom: 0.55em;
+  font-size: 1rem;
 }
 
 .article-body :is(h2, h3, h4):target {
   border-radius: 0.25rem;
-  background-color: color-mix(in oklab, var(--accent) 12%, transparent);
-  box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--accent) 12%, transparent);
+  background-color: color-mix(in oklab, var(--accent) 10%, transparent);
+  box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--accent) 10%, transparent);
 }
 
 /* --- Text ----------------------------------------------------------------- */
@@ -111,8 +124,8 @@
 /* --- Blockquote ----------------------------------------------------------- */
 
 .article-body blockquote {
-  padding: 0.15em 0 0.15em 1.15em;
-  border-left: 3px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  padding: 0.1em 0 0.1em 1.15em;
+  border-left: 2px solid color-mix(in oklab, var(--accent) 55%, transparent);
   color: var(--muted);
   font-style: normal;
 }
@@ -130,26 +143,42 @@
 
 /* --- Code ----------------------------------------------------------------- */
 
+/*
+   Inline code is tinted with the text colour rather than a syntax colour, so it
+   reads as "this is code" in light and dark mode without competing with the
+   surrounding prose.
+*/
 .article-body :not(pre) > code {
   padding: 0.15em 0.4em;
-  border: 1px solid var(--line);
-  border-radius: 0.3rem;
-  background-color: var(--surface);
+  border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+  border-radius: 0.25rem;
+  background-color: color-mix(in oklab, var(--ink) 6%, transparent);
   font-family: var(--font-mono);
   font-size: 0.875em;
   white-space: break-spaces;
 }
 
 .article-body pre {
-  padding: 1.1rem 1.25rem;
+  max-width: 100%;
+  padding: 1rem 1.25rem;
   border: 1px solid var(--line);
-  border-radius: 0.65rem;
+  border-radius: 0.5rem;
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.7;
   /* Code blocks scroll horizontally instead of stretching the page. */
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted) 45%, transparent) transparent;
   tab-size: 2;
+}
+
+@media (max-width: 640px) {
+  .article-body pre {
+    padding: 0.85rem 1rem;
+    font-size: 0.8125rem;
+  }
 }
 
 .article-body pre code {
@@ -177,6 +206,9 @@
   display: block;
   width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted) 45%, transparent) transparent;
   border-collapse: collapse;
   font-size: 0.9375rem;
 }
@@ -190,6 +222,9 @@
 
 .article-body th {
   background-color: var(--surface);
+  /* A slightly stronger rule under the header row separates labels from data
+     without turning the table into a grid of boxes. */
+  border-bottom-color: color-mix(in oklab, var(--ink) 22%, transparent);
   font-weight: 600;
   white-space: nowrap;
 }

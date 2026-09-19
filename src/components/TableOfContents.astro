@@ -22,7 +22,7 @@ const items = headings.filter((heading) => heading.depth === 2 || heading.depth 
             href={`#${heading.slug}`}
             data-toc-link
             class:list={[
-              'toc-link -ml-px block border-l-2 border-transparent py-1 leading-snug text-muted transition-colors hover:text-ink',
+              'toc-link -ml-px block border-l-2 border-transparent py-1.5 leading-snug text-muted transition-colors hover:text-ink',
               heading.depth === 3 ? 'pl-6' : 'pl-3',
             ]}
           >
@@ -35,8 +35,18 @@ const items = headings.filter((heading) => heading.depth === 2 || heading.depth 
 )}
 
 <style>
+  /*
+     One vertical rail for the whole list: the line is neutral, and the entry
+     being read turns its own segment indigo. Hovering previews the same
+     indicator at a third of the strength. No weight change, so the list never
+     reflows while scrolling.
+  */
+  .toc-link:hover {
+    border-color: color-mix(in oklab, var(--hero-accent) 30%, transparent);
+  }
+
   .toc-link[aria-current='location'] {
-    border-color: var(--accent);
+    border-color: var(--hero-accent);
     color: var(--ink);
   }
 </style>

@@ -26,34 +26,47 @@ const countLabel = `${total} ${total === 1 ? 'article' : 'articles'}`;
 ---
 
 <BaseLayout title={series.title} description={series.description}>
-  <div class="container-page pt-10 sm:pt-14">
-    <div class="mx-auto max-w-[46rem]">
+  <div class="container-page pt-10 sm:pt-12">
+    {/* `lg:mx-0` puts this column on the same left grid edge as every other
+        page title; below `lg` the measure is centred like the article column. */}
+    <div class="container-prose mx-auto lg:mx-0">
       <a
         href={withBase('/series/')}
-        class="inline-flex items-center gap-1.5 rounded-md text-sm text-muted transition-colors hover:text-ink"
+        class="inline-flex items-center gap-1.5 rounded-md text-sm text-muted transition-colors hover:text-[var(--hero-accent)]"
       >
         <ArrowLeft class="h-4 w-4" aria-hidden="true" />
         <span>All series</span>
       </a>
 
-      <header class="mt-7">
-        <h1 class="text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
+      {/* The header carries a wash of its own — a little stronger than the
+          article header's, still well under the inner page hero. */}
+      <header class="series-detail-head mt-8">
+        <h1 class="series-detail-title text-3xl leading-snug font-semibold tracking-tight sm:text-4xl">
           {series.title}
         </h1>
 
-        <p class="mt-4 text-base leading-relaxed text-muted">{series.description}</p>
+        <p class="mt-4 text-base leading-relaxed text-muted text-pretty">{series.description}</p>
 
-        <p class="mt-5 text-xs text-muted">{countLabel}</p>
+        <p class="mt-5 text-xs tabular-nums text-muted">{countLabel}</p>
       </header>
 
-      <ol class="mt-10 divide-y divide-line border-t border-line">
+      {/*
+        Progression rail: one continuous 1px line threaded through a small node
+        per part, so the list reads as Part 1 → Part N rather than as a numbered
+        table. The line is drawn by the row pseudo-elements and stops at the first
+        and last node; the numbers stay decorative.
+      */}
+      <ol class="series-progression mt-10 divide-y divide-line border-t border-line sm:mt-12">
         {series.posts.map((post, index) => (
-          <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 py-7">
+          <li class="series-progression-row grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 py-6 sm:py-7">
             {/* The list is already ordered, so the number is decorative. It
                   doubles as the part number and stays contiguous even when
                   `seriesOrder` has gaps or is missing. */}
-            <span class="pt-0.5 font-mono text-sm text-muted" aria-hidden="true">
-              {String(index + 1).padStart(2, '0')}
+            <span class="flex items-start gap-1.5 pt-0.5" aria-hidden="true">
+              <span class="series-progression-node mt-1.5"></span>
+              <span class="font-mono text-xs leading-4 text-muted tabular-nums">
+                {String(index + 1).padStart(2, '0')}
+              </span>
             </span>
             <BlogCard post={post} headingLevel={2} />
           </li>

@@ -27,11 +27,30 @@ export interface SiteConfig {
   locale: string;
   /** Fallback origin, only used when `Astro.site` is unavailable. */
   url: string;
-  /** Author name, used by SEO metadata and the RSS channel. */
+  /** Author name, used by SEO metadata, the RSS channel and the home hero. */
   author: string;
-  /** Job title shown in the hero section. */
+  /** Job title, shown next to the author name in the hero section. */
   jobTitle: string;
-  /** One-sentence introduction shown in the hero section. */
+  /**
+   * One-sentence positioning statement: the `<h1>` of the home page, and the
+   * most prominent line on the whole site.
+   *
+   * Most visitors arrive from a shared article and do not know the name yet, so
+   * this states what you build or why the blog exists rather than who you are.
+   * The home hero renders one line per sentence comma; see `index.astro`.
+   */
+  headline: string;
+  /**
+   * Optional phrase inside `headline` that is rendered in the hero accent
+   * colour. Kept as a separate string so the headline itself stays plain text
+   * (it is also used as the page's most important text node, not as markup).
+   * Trailing punctuation belongs in the phrase: it closes the accented line.
+   */
+  headlineAccent?: string;
+  /**
+   * Supporting line under the headline: what the blog covers, and for whom.
+   * Also used as the `og:image` alt text, so it has to stand on its own.
+   */
   tagline: string;
   /** Technologies highlighted as tags in the hero section. */
   techTags: string[];
@@ -54,7 +73,16 @@ export const SITE: SiteConfig = {
   url: 'http://localhost:4321',
   author: 'Your Name',
   jobTitle: 'AI / LLM / Backend Developer',
-  tagline: 'Exploring Large Language Models, RAG, AI Agents and Deep Learning.',
+  // The home page `<h1>`. One sentence, with a point of view.
+  //
+  // The line break in the hero comes from the sentence comma (see
+  // `src/pages/index.astro`): browsers break Chinese text between any two
+  // characters, so a headline left to wrap on its own can split a word in half.
+  // `headlineAccent` is the phrase that carries the hero accent colour; the
+  // final full stop is part of it so the accented line ends cleanly.
+  headline: '从原理到工程，把大模型真正做成系统。',
+  headlineAccent: '真正做成系统。',
+  tagline: '记录 LLM、RAG 与 Agent 的原理、实现、实验与踩坑。',
   techTags: ['LLM', 'RAG', 'AI Agent', 'PyTorch', 'Python'],
   github: 'https://github.com/yourname',
   email: 'your.email@example.com',
