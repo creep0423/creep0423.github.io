@@ -28,50 +28,19 @@ const repository = (name: string) => `${owner}/${name}`;
 
 export const projects: Project[] = [
   {
-    title: 'Mini RAG System',
+    title: 'Contract Intelligence',
     description:
-      'A complete RAG pipeline covering Document Loading, Chunking, Embedding, a Vector Database, the Retriever and LLM Generation.',
+      '面向企业合同履约与风险审查场景的智能助手，围绕合同解析、混合检索、证据引用与风险分析构建完整 RAG 链路。',
     highlights: [
-      'Swappable chunking and embedding strategies behind a single pipeline interface',
-      'Vector search with metadata filtering and configurable top-k retrieval',
-      'Retrieval evaluation script that scores answers against a small labelled set',
+      '基于 BGE-M3、Milvus Dense + BM25 Hybrid Search 与 Reranker 构建 Parent-Child Retrieval',
+      '使用 FastAPI + WebSocket 实现流式问答，并加入权限隔离、引用溯源与 Trace',
+      '支持补充协议覆盖、合同版本治理及评测 / UAT 回归验证',
     ],
-    technologies: ['Python', 'LLM', 'Embedding', 'Vector DB', 'RAG'],
-    githubUrl: repository('mini-rag-system'),
-    // demoUrl: 'https://example.com/mini-rag-system',
+    technologies: ['Python', 'RAG', 'LangChain', 'Milvus', 'BGE', 'FastAPI'],
+    githubUrl: repository('contract-intelligence'),
     demoUrl: undefined,
     featured: true,
-    year: '2025',
-  },
-  {
-    title: 'AI Agent',
-    description:
-      'An AI agent supporting Tool Calling, task planning and reliable multi-step execution.',
-    highlights: [
-      'Tool registry with JSON-schema validation and structured error recovery',
-      'Planner / executor loop with a bounded step budget and full execution trace',
-      'Deterministic test suite that replays recorded tool outputs offline',
-    ],
-    technologies: ['Python', 'LLM', 'Tool Calling', 'Agent'],
-    githubUrl: repository('ai-agent'),
-    demoUrl: undefined,
-    featured: true,
-    year: '2025',
-  },
-  {
-    title: 'LLM Playground',
-    description:
-      'An experiment tool for testing prompts, temperature and other model parameters side by side.',
-    highlights: [
-      'Side-by-side comparison of prompt variants and parameter settings',
-      'Streaming responses with token usage and latency per run',
-      'Exportable run history for reproducible experiments',
-    ],
-    technologies: ['Python', 'LLM', 'API'],
-    githubUrl: repository('llm-playground'),
-    demoUrl: undefined,
-    featured: true,
-    year: '2024',
+    year: '2026',
   },
 ];
 
