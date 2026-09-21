@@ -78,7 +78,7 @@ RetrievalPlan 是策略。
 
 Retriever 只负责执行。
 
-![从 Intent 到 RetrievalPlan 的完整关系](/images/production-rag/04-retrieval-plan-01.png)
+![从 Intent 到 RetrievalPlan 的完整关系](/images/production-rag/04-retrieval-plan-01.webp)
 
 > 图 1：从 Intent 到 RetrievalPlan 的完整关系。Intent 负责判断问题类型，RetrievalPlan 再把 Intent、置信度和问题特征翻译成真正可执行的检索策略。
 
@@ -240,7 +240,7 @@ Retrieval
 
 > **输入信息越少，不代表检索应该越简单；有时候恰好相反。**
 
-![不同问题类型对应不同的检索预算和风险策略](/images/production-rag/04-retrieval-plan-02.png)
+![不同问题类型对应不同的检索预算和风险策略](/images/production-rag/04-retrieval-plan-02.webp)
 
 > 图 2：不同问题类型对应不同的检索预算和风险策略。没有一套固定的 Top-K、Threshold 和 Query Variants 能适配所有 Query。
 
@@ -304,7 +304,7 @@ TABLE_QUERY       → 一整套配置
 
 更自然的方式是从一套 Base Params 开始，然后逐层打 Patch：
 
-![RetrievalPlan 的分层生成方式](/images/production-rag/04-retrieval-plan-03.png)
+![RetrievalPlan 的分层生成方式](/images/production-rag/04-retrieval-plan-03.webp)
 
 > 图 3：RetrievalPlan 的分层生成方式。与其维护一张不断膨胀的配置表，不如从 Base Params 出发，通过 Intent、置信度、风险类别和问题形态逐层叠加策略。
 

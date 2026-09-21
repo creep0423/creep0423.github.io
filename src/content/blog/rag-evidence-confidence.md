@@ -90,7 +90,7 @@ Chunk C：员工考勤管理办法
 
 这也是为什么生成前最好有一个真正的 **Evidence Gate**。
 
-![Retrieved、Relevant 与 Sufficient 是三个不同层次](/images/production-rag/05-evidence-confidence-01.png)
+![Retrieved、Relevant 与 Sufficient 是三个不同层次](/images/production-rag/05-evidence-confidence-01.webp)
 
 > 图 1：Retrieved、Relevant 与 Sufficient 是三个不同层次。检索到相关资料只是开始，进入生成前还需要判断证据是否足以覆盖用户真正的问题。
 
@@ -250,7 +250,7 @@ RAG 上线后，还有一个很容易制造安全感的东西：
 
 看起来“有引用”，实际上并不能证明整个回答成立。
 
-![Citation 的生成后核验链路](/images/production-rag/05-evidence-confidence-02.png)
+![Citation 的生成后核验链路](/images/production-rag/05-evidence-confidence-02.webp)
 
 > 图 2：Citation 的生成后核验链路。仅在答案末尾列出来源并不够，还需要检查正文引用的合法性、覆盖度以及引用内容是否真正支撑对应陈述。
 
@@ -372,7 +372,7 @@ answer_confidence = min(
 )
 ```
 
-![两阶段置信度设计](/images/production-rag/05-evidence-confidence-03.png)
+![两阶段置信度设计](/images/production-rag/05-evidence-confidence-03.webp)
 
 > 图 3：两阶段置信度设计。生成前先评估证据质量，生成后再检查答案是否忠实于证据，最终采用保守方式合并；这些分值用于工程诊断，而不是答案正确概率。
 

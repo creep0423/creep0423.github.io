@@ -70,7 +70,7 @@ draft: false
 
 所以在多轮 RAG 里，我会把 Retrieval 前面再加一道处理：
 
-![为什么 Follow-up Query 往往需要 Rewrite](/images/production-rag/03-query-rewrite-01.png)
+![为什么 Follow-up Query 往往需要 Rewrite](/images/production-rag/03-query-rewrite-01.webp)
 
 > 图 1：为什么 Follow-up Query 往往需要 Rewrite。对人来说容易理解的追问，对 Retriever 来说可能是一个语义不完整的 Query。
 
@@ -220,7 +220,7 @@ Q1 + Q2 + Q3
 
 而是：
 
-![多轮 RAG 中的 Query 处理与多路检索链路](/images/production-rag/03-query-rewrite-02.png)
+![多轮 RAG 中的 Query 处理与多路检索链路](/images/production-rag/03-query-rewrite-02.webp)
 
 > 图 2：多轮 RAG 中的 Query 处理与多路检索链路。Rewrite 负责补全问题，Variants 负责扩大表达覆盖，Multi-Query Retrieval 再通过 Merge、去重和 Rerank 收回候选集。
 
@@ -276,7 +276,7 @@ Multi-Query 有效果以后，还有一个挺容易上头的地方：
 
 还有一点很重要：不是每种 Intent 都值得启用 Multi-Query。
 
-![Rewrite 与 Query Variants 的启用边界](/images/production-rag/03-query-rewrite-03.png)
+![Rewrite 与 Query Variants 的启用边界](/images/production-rag/03-query-rewrite-03.webp)
 
 > 图 3：Rewrite 与 Query Variants 的启用边界。不是所有 Query 都值得改写或扩写，是否启用应取决于上下文依赖程度、召回收益和额外成本。
 

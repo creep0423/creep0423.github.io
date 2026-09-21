@@ -91,7 +91,7 @@ answer = llm.invoke(build_prompt(query, docs))
 
 更完整的主线通常会拆成类似这样的阶段：
 
-![Production RAG 的完整请求生命周期](/images/production-rag/01-intent-to-answer-01.png)
+![Production RAG 的完整请求生命周期](/images/production-rag/01-intent-to-answer-01.webp)
 
 > 图 1：Production RAG 的完整请求生命周期。生成只是其中一个阶段，前面有路由、理解和检索，后面还有引用、验证与 Trace
 
@@ -120,7 +120,7 @@ answer = llm.invoke(build_prompt(query, docs))
 
 一个比较实用的结构是：
 
-![Route 与 Early Exit](/images/production-rag/01-intent-to-answer-02.png)
+![Route 与 Early Exit](/images/production-rag/01-intent-to-answer-02.webp)
 
 > 图 2：Route 与 Early Exit。并不是所有 Query 都应该进入完整 RAG，能确定性解决的问题应该尽早收口。
 
@@ -389,7 +389,7 @@ Streaming
 
 一次 Bad Case 可能来自完全不同的位置：
 
-![RAG Bad Case 的分层诊断路径](/images/production-rag/01-intent-to-answer-03.png)
+![RAG Bad Case 的分层诊断路径](/images/production-rag/01-intent-to-answer-03.webp)
 
 > 图 3：RAG Bad Case 的分层诊断路径。先检查 Route、Rewrite 和 Retrieval，再判断问题是否真的出在 Prompt 或 Generation。
 

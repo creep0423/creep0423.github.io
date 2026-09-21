@@ -77,7 +77,7 @@ Hybrid Search
 
 可以把它理解成：
 
-![FAQ / Doc 与 Hybrid Search 的层次关系](/images/production-rag/02-hybrid-search-01.png)
+![FAQ / Doc 与 Hybrid Search 的层次关系](/images/production-rag/02-hybrid-search-01.webp)
 
 > 图 1：FAQ / Doc 与 Hybrid Search 的层次关系。前者决定搜索范围，后者决定在选定 Collection 内如何召回。
 
@@ -292,7 +292,7 @@ CrossEncoder 则把 `(query, document)` 成对输入模型，相关性判断更�
 
 因此合理的链路是：
 
-![Dense + BM25 + Reranker 的两阶段检索链路](/images/production-rag/02-hybrid-search-02.png)
+![Dense + BM25 + Reranker 的两阶段检索链路](/images/production-rag/02-hybrid-search-02.webp)
 
 > 图 2：Dense + BM25 + Reranker 的两阶段检索链路。Recall 阶段尽量找全候选，Rerank 阶段再把真正相关的证据排到前面。
 
@@ -341,7 +341,7 @@ role
 
 更合理的方式也不是把整个知识库搜完以后，再让 Python 删除不允许返回的数据，而是把这些条件转换成 Milvus `expr`，直接下推到检索阶段，让 Dense 和 Sparse 都只在合法的数据范围里搜索。
 
-![Production Retrieval 中的 Filter Pushdown](/images/production-rag/02-hybrid-search-03.png)
+![Production Retrieval 中的 Filter Pushdown](/images/production-rag/02-hybrid-search-03.webp)
 
 > 图 3：Production Retrieval 中的 Filter Pushdown。过滤条件直接约束检索空间，而不是全库召回后再在应用层删除结果。
 
