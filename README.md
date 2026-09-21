@@ -252,20 +252,20 @@ classic GitHub Pages project-page 404.
 Create a Markdown file in `src/content/blog/`. The file name becomes the URL:
 
 ```text
-src/content/blog/rag-from-scratch.md  →  /blog/rag-from-scratch/
+src/content/blog/rag-intent-to-answer.md  →  /blog/rag-intent-to-answer/
 ```
 
 ### Frontmatter
 
 ```yaml
 ---
-title: '从零理解 RAG：从 Embedding 到 Vector Database' # required
+title: '从 Intent 到 Answer：企业级 RAG Pipeline 是怎么工作的' # required
 description: 'A one-line summary used on cards, in meta tags and in RSS.' # required
 pubDate: 2026-03-02 # required
 updatedDate: 2026-03-14 # optional, shown only when present
 tags: ['RAG', 'Embedding', 'Vector DB'] # optional, defaults to []
 category: 'RAG' # required
-series: 'rag-from-zero' # optional, id from src/data/series.ts
+series: 'production-rag' # optional, id from src/data/series.ts
 seriesOrder: 1 # optional, position inside the series
 draft: false # optional, defaults to false
 featured: false # optional, defaults to false, adds a badge
@@ -297,10 +297,10 @@ A series groups posts into an ordered reading list, served at `/series` and `/se
 ```ts
 export const blogSeries: BlogSeries[] = [
   {
-    slug: 'rag-from-zero',
-    title: 'RAG 从入门到实战',
+    slug: 'production-rag',
+    title: '从 Demo 到 Production RAG',
     description:
-      '从 Embedding、Chunking、Vector Database 到完整 RAG Pipeline，系统理解 RAG 的核心原理与实践。',
+      '从 Production RAG 主链路出发，覆盖 Hybrid Search、多轮 Query Rewrite、动态 RetrievalPlan，以及证据、引用与置信度设计。',
   },
 ];
 ```
@@ -308,7 +308,7 @@ export const blogSeries: BlogSeries[] = [
 2. Reference it from each post with `series: '<slug>'` and give the parts an order:
 
 ```yaml
-series: 'rag-from-zero'
+series: 'production-rag'
 seriesOrder: 2
 ```
 

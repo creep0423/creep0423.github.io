@@ -8,8 +8,8 @@ import { z } from 'astro/zod';
  * Blog collection.
  *
  * Files live in `src/content/blog/`. The entry `id` is derived from the file
- * path, so `transformer-self-attention.md` becomes the URL
- * `/blog/transformer-self-attention/`.
+ * path, so `rag-intent-to-answer.md` becomes the URL
+ * `/blog/rag-intent-to-answer/`.
  */
 const blog = defineCollection({
   loader: glob({

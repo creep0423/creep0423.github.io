@@ -20,15 +20,10 @@ export interface BlogSeries {
 
 export const blogSeries: BlogSeries[] = [
   {
-    slug: 'rag-from-zero',
-    title: 'RAG 从入门到实战',
+    slug: 'production-rag',
+    title: '从 Demo 到 Production RAG',
     description:
-      '从 Embedding、Chunking、Vector Database 到完整 RAG Pipeline，系统理解 RAG 的核心原理与实践。',
-  },
-  {
-    slug: 'transformer-from-zero',
-    title: 'Transformer 从零理解',
-    description: '从 Attention 到 Transformer 架构，逐步理解大语言模型背后的核心机制。',
+      '从 Production RAG 主链路出发，覆盖 Hybrid Search、多轮 Query Rewrite、动态 RetrievalPlan，以及证据、引用与置信度设计。',
   },
 ];
 
