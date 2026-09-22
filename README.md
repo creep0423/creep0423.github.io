@@ -204,7 +204,7 @@ export const SITE: SiteConfig = {
   lang: 'zh-CN', // <html lang> and RSS <language>
   locale: 'zh_CN', // Open Graph locale
   url: 'http://localhost:4321', // fallback origin only
-  author: 'Your Name',
+  author: 'CREEP',
   jobTitle: 'AI / LLM / Backend Developer',
   tagline: 'Exploring Large Language Models, RAG, AI Agents and Deep Learning.',
   techTags: ['LLM', 'RAG', 'AI Agent', 'PyTorch', 'Python'],
@@ -456,4 +456,4 @@ a static artifact on purpose.
 
 ## License
 
-[MIT](./LICENSE) © Your Name
+[MIT](./LICENSE) © CREEP

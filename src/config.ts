@@ -77,7 +77,7 @@ export const SITE: SiteConfig = {
   lang: 'zh-CN',
   locale: 'zh_CN',
   url: 'http://localhost:4321',
-  author: 'Your Name',
+  author: 'CREEP',
   jobTitle: 'AI / LLM Application Engineer',
   heroEyebrow: "Hi, I'm CREEP 👋",
   // The home page `<h1>`. One sentence, with a point of view.
