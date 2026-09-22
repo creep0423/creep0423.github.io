@@ -18,7 +18,7 @@
     "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "@lucide/astro": "^1.45.0",
+    "@lucide/astro": "^1.47.0",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.2",
     "katex": "^0.18.7",
