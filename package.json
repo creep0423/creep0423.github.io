@@ -20,7 +20,7 @@
     "@astrojs/sitemap": "^3.7.4",
     "@lucide/astro": "^1.45.0",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "katex": "^0.18.7",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
